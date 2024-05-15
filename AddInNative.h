@@ -5,8 +5,6 @@
 #include "include/AddInDefBase.h"
 #include "include/IMemoryManager.h"
 
-using std::wstring;
-
 ///////////////////////////////////////////////////////////////////////////////
 // class CAddInNative
 class CAddInNative : public IComponentBase
@@ -42,7 +40,6 @@ public:
     virtual long ADDIN_API GetInfo();
     virtual void ADDIN_API Done();
     // ILanguageExtenderBase
-    bool wstring_to_p(std::wstring str, tVariant* val);
     virtual bool ADDIN_API RegisterExtensionAs(WCHAR_T**);
     virtual long ADDIN_API GetNProps();
     virtual long ADDIN_API FindProp(const WCHAR_T* wsPropName);
