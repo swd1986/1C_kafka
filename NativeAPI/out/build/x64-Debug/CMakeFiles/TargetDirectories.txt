@@ -1,3 +1,0 @@
-D:/WORK/1C/addin_8_3_14_1694/example/NativeAPI/out/build/x64-Debug/CMakeFiles/AddInNative.dir
-D:/WORK/1C/addin_8_3_14_1694/example/NativeAPI/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-D:/WORK/1C/addin_8_3_14_1694/example/NativeAPI/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
