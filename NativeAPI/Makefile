@@ -7,7 +7,7 @@ SOURCES=AddInNative.cpp \
 LIBS=pthread
 
 OBJECTS=$(SOURCES:.cpp=.o)
-INCLUDES=-I../../include
+INCLUDES=-I../include
 CXXLAGS=$(CXXFLAGS) $(INCLUDES) -m32 -finput-charset=WINDOWS-1251 -fPIC
 
 all: $(TARGET)
