@@ -7,3 +7,8 @@ https://infostart.ru/1c/articles/323372/ - Компилирование внеш
 
 https://its.1c.ru/db/metod8dev/content/3221/hdoc
 
+
+
+INSTALL 
+sudo apt install build-essential
+
