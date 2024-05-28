@@ -7,6 +7,9 @@ https://infostart.ru/1c/articles/323372/ - Компилирование внеш
 
 https://its.1c.ru/db/metod8dev/content/3221/hdoc
 
+https://releases.1c.ru/version_files?nick=Platform83&ver=8.3.14.1694 - Ссылка на дистрибутивы
+
+
 
 
 * INSTALL 
