@@ -31,7 +31,10 @@ systemctl start srv1cv83
 wget https://repo.postgrespro.ru/1c/1c-16/keys/pgpro-repo-add.sh
 sh pgpro-repo-add.sh
 apt-get install postgrespro-1c-16
-
+/opt/pgpro/1c-16/bin/pg-setup initdb
+/opt/pgpro/1c-16/bin/pg-setup service enable
+/opt/pgpro/1c-16/bin/pg-setup service start
+/opt/pgpro/1c-16/bin/pg-setup service status
 
 * Полезные команды
 sudo dpkg -l | grep 1c-enterprise - список запущенных 1С
