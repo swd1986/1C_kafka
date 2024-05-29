@@ -22,6 +22,15 @@ sudo apt-get install gcc-multilib g++-multilib
 
 * 1С  
 sudo dpkg -i *.deb
+apt-get -y install ttf-mscorefonts-installer
+fc-cache –fv
+apt-get install libfreetype6 libgsf-1-common unixodbc glib2.0
+systemctl start srv1cv83
+
+* Postgress
+wget https://repo.postgrespro.ru/1c/1c-16/keys/pgpro-repo-add.sh
+sh pgpro-repo-add.sh
+apt-get install postgrespro-1c-16
 
 
 * Полезные команды
