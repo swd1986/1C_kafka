@@ -54,4 +54,9 @@ sudo dpkg --purge 1c-enterprise83-server
 sudo dpkg --purge 1c-enterprise83-common-nls
 sudo dpkg --purge 1c-enterprise83-common 
 
+* Общие папки
+sudo adduser shustov vboxsf
+
+
+
 
