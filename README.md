@@ -27,6 +27,10 @@ fc-cache –fv
 apt-get install libfreetype6 libgsf-1-common unixodbc glib2.0
 systemctl start srv1cv83
 
+* HASP  ???
+https://ftp.etersoft.ru/pub/Etersoft/HASP/last/Ubuntu/22.04/
+
+
 * Postgress
 wget https://repo.postgrespro.ru/1c/1c-16/keys/pgpro-repo-add.sh
 sh pgpro-repo-add.sh
@@ -35,6 +39,12 @@ apt-get install postgrespro-1c-16
 /opt/pgpro/1c-16/bin/pg-setup service enable
 /opt/pgpro/1c-16/bin/pg-setup service start
 /opt/pgpro/1c-16/bin/pg-setup service status
+
+sudo -u postgres psql
+ALTER USER postgres WITH PASSWORD 'postgres';
+
+
+
 
 * Открытие портов
 sudo ufw allow 1540/tcp
