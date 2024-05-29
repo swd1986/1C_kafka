@@ -36,6 +36,12 @@ apt-get install postgrespro-1c-16
 /opt/pgpro/1c-16/bin/pg-setup service start
 /opt/pgpro/1c-16/bin/pg-setup service status
 
+* Открытие портов
+sudo ufw allow 1540/tcp
+sudo ufw allow 1541/tcp
+sudo ufw allow 5432/tcp
+
+
 * Полезные команды
 sudo dpkg -l | grep 1c-enterprise - список запущенных 1С
 
