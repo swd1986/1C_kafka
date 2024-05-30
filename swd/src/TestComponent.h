@@ -13,6 +13,7 @@ private:
 private:
     std::u16string text;
     std::u16string getTestString();
+    std::u16string getVersion();
     void setTestString(const std::u16string &text);
 };
 #endif //__TESTCOMPONENT_H__

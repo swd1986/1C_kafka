@@ -22,6 +22,7 @@ TestComponent::TestComponent()
 		[&](VH var) { this->value = var; });
 
 	AddFunction(u"GetText", u"ПолучитьТекст", [&]() { this->result = this->getTestString(); });
+	AddFunction(u"GetVersion", u"ПолучитьВерсию", [&]() { this->result = this->getVersion(); });
 
 	AddProcedure(u"SetText", u"УстановитьТекст", [&](VH par) { this->setTestString(par); }, {{0, u"default: "}});
 }
@@ -38,6 +39,11 @@ std::u16string TestComponent::getTestString()
 	timeinfo = localtime(&rawtime);
 	strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
 	return text + MB2WCHAR(buffer);
+}
+
+std::u16string TestComponent::getVersion()
+{
+	return text + MB2WCHAR("Тест");
 }
 
 void TestComponent::setTestString(const std::u16string &text)
