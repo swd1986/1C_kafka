@@ -217,14 +217,22 @@ const WCHAR_T* CAddInNative::GetPropName(long lPropNum, long lPropAlias)
     return wsPropName;
 }
 //---------------------------------------------------------------------------//
+bool CAddInNative::wstring_to_p(std::wstring str, tVariant* val) {
+	char* t1;
+	TV_VT(val) = VTYPE_PWSTR;
+	m_iMemory->AllocMemory((void**)&t1, (str.length() + 1) * sizeof(WCHAR_T));
+	memcpy(t1, str.c_str(), (str.length() + 1) * sizeof(WCHAR_T));
+	val->pstrVal = t1;
+	val->strLen = str.length();
+	return true;
+}
+//---------------------------------------------------------------------------//
 bool CAddInNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 { 
     switch(lPropNum)
     {
         case ePropVersion:
-		    //wstring_to_p(version, pvarPropVal);
-            TV_VT(pvarPropVal) = VTYPE_PWSTR;
-            TV_BOOL(pvarPropVal) = "";
+		    wstring_to_p(version, pvarPropVal);
 		break;
 
         case ePropIsEnabled:
