@@ -1,14 +1,15 @@
-TARGET=AddInNative32.so
+TARGET=AddInNative64.so
 
 SOURCES=AddInNative.cpp \
-	dllmain.cpp \
-	stdafx.cpp 
+        dllmain.cpp \
+        stdafx.cpp 
 
 LIBS=pthread
 
 OBJECTS=$(SOURCES:.cpp=.o)
 INCLUDES=-I../include
-CXXLAGS=$(CXXFLAGS) $(INCLUDES) -m32 -finput-charset=WINDOWS-1251 -fPIC
+CXXFLAGS += -m64
+CXXLAGS=$(CXXFLAGS) $(INCLUDES) -finput-charset=WINDOWS-1251 -fPIC
 
 all: $(TARGET)
 
