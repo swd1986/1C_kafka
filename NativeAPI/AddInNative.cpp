@@ -17,10 +17,10 @@
 #include "AddInNative.h"
 #include <string>
 
-using std::string;
+using std::wstring;
 
 #define TIME_LEN 65
-//wstring	version	= L"MDM. SWD. 1C Connection Kafka Linux (Native C++). TOO BI-Innovations. 0.1";
+wstring	version	= L"MDM. SWD. 1C Connection Kafka Linux (Native C++). TOO BI-Innovations. 0.1";
 
 #define BASE_ERRNO     7
 
