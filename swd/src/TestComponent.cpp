@@ -43,7 +43,7 @@ std::u16string TestComponent::getTestString()
 
 std::u16string TestComponent::getVersion()
 {
-	return text + MB2WCHAR("Тест");
+	return text + MB2WCHAR("MDM -> Linux Kafka Native версия 0.1");
 }
 
 void TestComponent::setTestString(const std::u16string &text)
