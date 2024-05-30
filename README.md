@@ -73,6 +73,10 @@ sudo dpkg --purge 1c-enterprise83-common
 * Общие папки
 sudo adduser shustov vboxsf
 
+* GIT
+git config --global user.name "swd1986"
+git config --global user.email swd1986@yandex.ru
+
 
 
 
