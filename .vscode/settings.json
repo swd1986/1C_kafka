@@ -1,3 +1,6 @@
 {
-    "cmake.sourceDirectory": "D:/WORK/1C/1C_kafka/addin-template"
+    "cmake.sourceDirectory": "D:/WORK/1C/1C_kafka/addin-template",
+    "files.associations": {
+        "string": "cpp"
+    }
 }
