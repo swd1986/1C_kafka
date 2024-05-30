@@ -223,6 +223,8 @@ bool CAddInNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
     {
         case ePropVersion:
 		    //wstring_to_p(version, pvarPropVal);
+            TV_VT(pvarPropVal) = VTYPE_PWSTR;
+            TV_BOOL(pvarPropVal) = "";
 		break;
 
         case ePropIsEnabled:
