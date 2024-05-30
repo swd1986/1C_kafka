@@ -27,6 +27,10 @@ fc-cache –fv
 apt-get install libfreetype6 libgsf-1-common unixodbc glib2.0
 systemctl start srv1cv83
 
+* debug mode
+/etc/init.d/srv1cv83
+
+
 * HASP  ???
 https://ftp.etersoft.ru/pub/Etersoft/HASP/last/Ubuntu/22.04/
 
