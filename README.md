@@ -78,6 +78,10 @@ sudo adduser shustov vboxsf
 git config --global user.name "swd1986"
 git config --global user.email swd1986@yandex.ru
 
+* SH
+chmod +x build.sh
+
+
 
 
 
