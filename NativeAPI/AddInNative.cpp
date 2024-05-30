@@ -29,11 +29,11 @@ wstring	version	= L"MDM. SWD. 1C Connection Kafka Linux (Native C++). TOO BI-Inn
 #endif
 
 static const wchar_t *g_PropNames[] = {
+    L"Version", 
     L"IsEnabled", 
     L"IsTimerPresent"
 };
 static const wchar_t *g_MethodNames[] = {
-    L"version", 
     L"Enable", 
     L"Disable", 
     L"ShowInStatusLine",
@@ -45,11 +45,11 @@ static const wchar_t *g_MethodNames[] = {
 };
 
 static const wchar_t *g_PropNamesRu[] = {
+    L"Версия",
     L"Включен", 
     L"ЕстьТаймер"
 };
 static const wchar_t *g_MethodNamesRu[] = {
-    L"Версия", 
     L"Включить", 
     L"Выключить", 
     L"ПоказатьВСтрокеСтатуса", 
