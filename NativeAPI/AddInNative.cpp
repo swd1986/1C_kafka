@@ -33,6 +33,7 @@ static const wchar_t *g_PropNames[] = {
     L"IsTimerPresent"
 };
 static const wchar_t *g_MethodNames[] = {
+    L"version", 
     L"Enable", 
     L"Disable", 
     L"ShowInStatusLine",
@@ -48,6 +49,7 @@ static const wchar_t *g_PropNamesRu[] = {
     L"ЕстьТаймер"
 };
 static const wchar_t *g_MethodNamesRu[] = {
+    L"Версия", 
     L"Включить", 
     L"Выключить", 
     L"ПоказатьВСтрокеСтатуса", 
@@ -219,14 +221,18 @@ bool CAddInNative::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 { 
     switch(lPropNum)
     {
-    case ePropIsEnabled:
-        TV_VT(pvarPropVal) = VTYPE_BOOL;
-        TV_BOOL(pvarPropVal) = m_boolEnabled;
-        break;
-    case ePropIsTimerPresent:
-        TV_VT(pvarPropVal) = VTYPE_BOOL;
-        TV_BOOL(pvarPropVal) = true;
-        break;
+        case ePropVersion:
+		    //wstring_to_p(version, pvarPropVal);
+		break;
+
+        case ePropIsEnabled:
+            TV_VT(pvarPropVal) = VTYPE_BOOL;
+            TV_BOOL(pvarPropVal) = m_boolEnabled;
+            break;
+        case ePropIsTimerPresent:
+            TV_VT(pvarPropVal) = VTYPE_BOOL;
+            TV_BOOL(pvarPropVal) = true;
+            break;
     default:
         return false;
     }

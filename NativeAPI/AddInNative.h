@@ -12,7 +12,8 @@ class CAddInNative : public IComponentBase
 public:
     enum Props
     {
-        ePropIsEnabled = 0,
+        ePropVersion = 0,
+        ePropIsEnabled,
         ePropIsTimerPresent,
         ePropLast      // Always last
     };
