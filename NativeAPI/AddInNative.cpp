@@ -256,16 +256,18 @@ bool CAddInNative::SetPropVal(const long lPropNum, tVariant *varPropVal)
 
     return true;
 }
-//---------------------------------------------------------------------------//
+//swd---------------------------------------------------------------------------//
 bool CAddInNative::IsPropReadable(const long lPropNum)
 { 
     switch(lPropNum)
     { 
-    case ePropIsEnabled:
-    case ePropIsTimerPresent:
-        return true;
-    default:
-        return false;
+        case ePropVersion:
+		    return true;
+        case ePropIsEnabled:
+        case ePropIsTimerPresent:
+            return true;
+        default:
+            return false;
     }
 
     return false;
@@ -275,6 +277,8 @@ bool CAddInNative::IsPropWritable(const long lPropNum)
 {
     switch(lPropNum)
     { 
+    case ePropVersion:
+		return false;
     case ePropIsEnabled:
         return true;
     case ePropIsTimerPresent:
