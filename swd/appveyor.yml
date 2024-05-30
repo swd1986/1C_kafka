@@ -1,0 +1,94 @@
+version: 0.3.4.{build}
+configuration: Release
+platform: x64
+
+branches:
+  only:
+    - develop
+
+skip_branch_with_pr: true
+
+environment:
+  global:
+    URL_1CV8T:
+      secure: z47uplaqZaQ0ZkroXy0GP00nv6ACPwovtb+EjfPgpS0IlWM6VQd+8apwLfqT9ndX
+    API_TOKEN:
+      secure: 85XpT8I1bxRTZaiIA+co0b5GS05J2VOn7PzunkYlL40=
+
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: Ubuntu1804
+      job_name: Linux
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+      job_depends_on: Linux
+      job_name: Windows
+
+install:
+  - sh: sudo dpkg --add-architecture i386
+  - sh: sudo apt -qq update
+  - sh: sudo apt -qq -y install uuid-dev
+  - sh: sudo apt -qq -y install gcc-multilib g++-multilib
+
+init:
+  - cmd: cmake --version
+  - cmd: msbuild /version
+  - cmd: echo.
+
+build_script:
+  - sh: echo "#define VERSION_FULL " ${APPVEYOR_BUILD_VERSION} > "version.h"
+  - cmd: Powershell.exe -File manifest.ps1 -Project NativeAddIn -Version %APPVEYOR_BUILD_VERSION%
+
+  - mkdir build32
+  - cd build32
+  - sh: cmake -D CMAKE_BUILD_TYPE:STRING=Release -D TARGET_PLATFORM_32:BOOL=ON --build ..
+  - cmd: cmake .. -A Win32 -DMySuffix2=32
+  - cmake --build . --config Release
+  - cd ..
+
+  - mkdir build64
+  - cd build64
+  - sh: cmake -D CMAKE_BUILD_TYPE:STRING=Release -D TARGET_PLATFORM_32:BOOL=OFF --build ..
+  - cmd: cmake .. -A x64 -DMySuffix2=64
+  - cmake --build . --config Release
+  - cd ..
+
+  - sh: cp bin/libNativeAddInLin??.so .
+  - sh: 7z a NativeAddIn.zip libNativeAddInLin??.so
+  - cmd: copy bin\Release\libNativeAddInWin??.dll .
+  - cmd: Powershell.exe -File appveyor.ps1
+
+for:
+  - matrix:
+      only:
+        - job_name: Linux
+    artifacts:
+      - path: NativeAddIn.zip
+        name: NativeAddIn
+
+  - matrix:
+      only:
+        - job_name: Windows
+
+    cache: 1cv8.zip
+
+    artifacts:
+      - path: AddIn.zip
+        name: AddIn
+
+      - path: NativeAddIn.epf
+        name: NativeAddIn
+
+      - path: example.log
+        name: example log
+
+    deploy:
+      - provider: GitHub
+        auth_token:
+          secure: v7P89NQ2I5+WGNNdhpFrZEt6OCTPf8A8VSC5rttZMXh3DJ2fTChNEjZ1Wvm3kfBt
+        repository: lintest/AddinTemplate
+        artifact: AddIn.zip, NativeAddIn.epf
+        draft: true
+        prerelease: true
+        force_update: true
+        on:
+          branch: develop
+          APPVEYOR_REPO_TAG: true
