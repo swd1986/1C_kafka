@@ -13,6 +13,7 @@ https://releases.1c.ru/version_files?nick=Platform83&ver=8.3.14.1694 - Ссыл�
 
 https://interface31.ru/tech_it/2016/01/vklyuchaem-tehnologicheskiy-zhurnal-dlya-1spredpriyatie.html - Включаем технологический журнал для 1С:Предприятие
 
+https://github.com/lintest/AddinTemplate.git - Шаблон, который я начал проект
 
 
 * INSTALL 
