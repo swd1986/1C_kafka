@@ -82,6 +82,8 @@ git config --global user.email swd1986@yandex.ru
 * SH
 chmod +x build.sh
 
+* MS Code
+sudo code --user-data-dir="~/.vscode-root"
 
 
 
