@@ -81,6 +81,10 @@ git config --global user.email swd1986@yandex.ru
 
 * SH
 chmod +x build.sh
+chmod +x producer.exe
+chmod +x producer.cpp
+
+
 
 
 
