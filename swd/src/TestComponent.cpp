@@ -23,7 +23,7 @@ TestComponent::TestComponent()
 
 	AddFunction(u"GetText", u"ПолучитьТекст", [&]() { this->result = this->getTestString(); });
 	AddFunction(u"GetVersion", u"ПолучитьВерсию", [&]() { this->result = this->getVersion(); });
-	AddFunction(u"test_send", u"test_send", [&](VH par) { this->result = this->test_send(par); });
+	AddFunction(u"test_send", u"test_send", [&](VH par1, VH par2) { this->result = this->test_send(par1, par2); });
 
 	AddProcedure(u"SetText", u"УстановитьТекст", [&](VH par) { this->setTestString(par); }, {{0, u"default: "}});
 }
@@ -47,9 +47,9 @@ std::u16string TestComponent::getVersion()
 	return text + MB2WCHAR("MDM -> Linux Kafka Native версия 0.1");
 }
 
-std::u16string TestComponent::test_send(const std::u16string &p_text)
+std::u16string TestComponent::test_send(const std::u16string &p_text1, const std::u16string &p_text2)
 {
-	return p_text;
+	return p_text1 + p_text2;
 }
 
 void TestComponent::setTestString(const std::u16string &text)
