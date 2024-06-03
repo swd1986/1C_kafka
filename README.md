@@ -78,12 +78,14 @@ sudo adduser shustov vboxsf
 * GIT
 git config --global user.name "swd1986"
 git config --global user.email swd1986@yandex.ru
+git remote set-url origin https://<TOKEN>@github.com/swd1986/1C_kafka.git
 
 * SH
 chmod +x build.sh
 
 * MS Code
 sudo code --user-data-dir="~/.vscode-root"
+
 
 
 
