@@ -86,6 +86,8 @@ chmod +x producer.cpp
 
 
 
+* MS Code
+sudo code --user-data-dir="~/.vscode-root"
 
 
 
