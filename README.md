@@ -23,6 +23,11 @@ sudo apt-get update -y
 sudo apt install build-essential
 sudo apt-get install -y gcc-multilib
 sudo apt-get install gcc-multilib g++-multilib
+sudo apt install librdkafka-dev
+
+* RUN 
+g++ producer.cpp -o producer -lrdkafka++ -lrdkafka -lz -lpthread -lrt
+
 
 * 1С  
 sudo dpkg -i *.deb
@@ -50,8 +55,6 @@ apt-get install postgrespro-1c-16
 
 sudo -u postgres psql
 ALTER USER postgres WITH PASSWORD 'postgres';
-
-
 
 
 * Открытие портов
@@ -86,11 +89,11 @@ chmod +x producer.exe
 chmod +x producer.cpp
 
 
-
 * MS Code
 sudo code --user-data-dir="~/.vscode-root"
 
-
-
-
+* LINUX Oracle
+sudo yum update
+sudo yum install gcc gcc-c++ make automake autoconf kernel-devel
+sudo yum install gcc-multilib
 
