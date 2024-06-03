@@ -1,4 +1,12 @@
 ﻿#include "TestComponent.h"
+#include <stdio.h>
+#include <signal.h>
+#include <string.h>
+#include <string>
+#include <librdkafka/rdkafka.h>
+static volatile sig_atomic_t run = 1;
+
+using std::string;
 
 std::vector<std::u16string> TestComponent::names = {
 	AddComponent(u"AddInNative", []() { return new TestComponent; }),
@@ -23,7 +31,7 @@ TestComponent::TestComponent()
 
 	AddFunction(u"GetText", u"ПолучитьТекст", [&]() { this->result = this->getTestString(); });
 	AddFunction(u"GetVersion", u"ПолучитьВерсию", [&]() { this->result = this->getVersion(); });
-	AddFunction(u"test_send", u"test_send", [&](VH par1, VH par2) { this->result = this->test_send(par1, par2); });
+	AddFunction(u"SendProducer", u"SendProducer", [&](VH par1, VH par2) { this->result = this->SendProducer(par1, par2); });
 
 	AddProcedure(u"SetText", u"УстановитьТекст", [&](VH par) { this->setTestString(par); }, {{0, u"default: "}});
 }
@@ -44,10 +52,10 @@ std::u16string TestComponent::getTestString()
 
 std::u16string TestComponent::getVersion()
 {
-	return text + MB2WCHAR("MDM -> Linux Kafka Native версия 0.1");
+	return text + MB2WCHAR("MDM -> Linux Kafka Native версия: " + this->version());
 }
 
-std::u16string TestComponent::test_send(const std::u16string &p_text1, const std::u16string &p_text2)
+std::u16string TestComponent::SendProducer(const std::u16string &p_text1, const std::u16string &p_text2)
 {
 	return p_text1 + p_text2;
 }
