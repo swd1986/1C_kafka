@@ -82,6 +82,10 @@ git remote set-url origin https://<TOKEN>@github.com/swd1986/1C_kafka.git
 
 * SH
 chmod +x build.sh
+chmod +x producer.exe
+chmod +x producer.cpp
+
+
 
 * MS Code
 sudo code --user-data-dir="~/.vscode-root"
