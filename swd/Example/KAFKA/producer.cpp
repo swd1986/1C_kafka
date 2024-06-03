@@ -40,7 +40,7 @@ int main()
 	brokers = "DC1TMSGBRKR01:9092,DC2TMSGBRKR01:9092,DC3TMSGBRKR01:9092";
 	topic = "test";
 
-	conf = rd_kafka_conf_new();
+	//conf = rd_kafka_conf_new();
 
 	//     if (rd_kafka_conf_set(conf, "bootstrap.servers", brokers, errstr,
 	//                               sizeof(errstr)) != RD_KAFKA_CONF_OK) {
