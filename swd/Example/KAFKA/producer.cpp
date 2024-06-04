@@ -2,7 +2,7 @@
 #include <signal.h>
 #include <string.h>
 #include <string>
-#include <librdkafka/rdkafka.h>
+#include <rdkafkacpp.h>
 static volatile sig_atomic_t run = 1;
 
 using std::string;
@@ -40,27 +40,27 @@ int main()
 	brokers = "DC1TMSGBRKR01:9092,DC2TMSGBRKR01:9092,DC3TMSGBRKR01:9092";
 	topic = "test";
 
-	//conf = rd_kafka_conf_new();
+	conf = rd_kafka_conf_new();
 
-	//     if (rd_kafka_conf_set(conf, "bootstrap.servers", brokers, errstr,
-	//                               sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	//         fprintf(stderr, "%s\n", errstr);
-	//         return 1;
-	//     }
+	// if (rd_kafka_conf_set(conf, "bootstrap.servers", brokers, errstr,
+	//                                sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+	//          fprintf(stderr, "%s\n", errstr);
+	//          return 1;
+	//      }
 
-	//     if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
-	// 		errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	// 		//fprintf(stderr, "%% %s\n", errstr);
-	// 		//exit(1);
-	// 	    return false;
-	// 	}
+	    //  if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
+	 	// 	errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+	 	// 	//fprintf(stderr, "%% %s\n", errstr);
+	 	// 	//exit(1);
+	 	//     return false;
+	 	// }
 
-	// 	if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
-	// 		errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	// 		//fprintf(stderr, "%% %s\n", errstr);
-	// 		//exit(1);
-	// 		return false;
-	// 	}
+	 	// if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
+	 	// 	errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+	 	// 	//fprintf(stderr, "%% %s\n", errstr);
+	 	// 	//exit(1);
+	 	// 	return false;
+	 	// }
 
 	// 	if (rd_kafka_conf_set(conf, "sasl.username", "svc.mdm",
 	// 		errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {

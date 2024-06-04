@@ -9,10 +9,8 @@ add_library(${TARGET} SHARED
 		src/AddInNative.rc
 		src/TestComponent.cpp
 		src/TestComponent.h
-		src/stdafx.h)
-
-find_package(PkgConfig REQUIRED) 
-pkg_check_modules(rdkafka++ REQUIRED IMPORTED_TARGET rdkafka++)  
+		src/stdafx.h
+		librdkafka/rdkafka.h)
 
 target_compile_definitions(${TARGET} PRIVATE UNICODE _UNICODE)
 target_include_directories(${TARGET} PRIVATE include)
@@ -55,7 +53,7 @@ if (UNIX)
 		set(CMAKE_CXX_FLAGS "-m64 ${CMAKE_CXX_FLAGS}")
 	endif ()
 	target_link_libraries(${PROJECT_NAME} -static-libstdc++)
-	target_link_libraries(${PROJECT_NAME} PkgConfig::rdkafka++)
+	target_link_libraries(${PROJECT_NAME} rdkafka++)
 	
 else(UNIX)
 	add_definitions(/MT)
