@@ -1,5 +1,7 @@
 *Полезные ссылки*
 
+https://github.com/perkss/c-kafka-examples/tree/main - здесь есть что то интересное?
+
 https://confluence.bi.group/pages/viewpage.action?pageId=100473262 - планирование
 
 https://infostart.ru/1c/articles/193577/
