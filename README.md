@@ -16,6 +16,10 @@ https://interface31.ru/tech_it/2016/01/vklyuchaem-tehnologicheskiy-zhurnal-dlya-
 https://github.com/lintest/AddinTemplate.git - Шаблон, который я начал проект
 https://infostart.ru/1c/articles/2044928/ - Внешняя компонента 1С и С++. Продолжаем разговор.
 
+https://docs.confluent.io/kafka-clients/librdkafka/current/overview.html#cplus-installation
+
+DEB(у меня) RPM (цель)
+
 
 * INSTALL 
 
@@ -24,6 +28,9 @@ sudo apt install build-essential
 sudo apt-get install -y gcc-multilib
 sudo apt-get install gcc-multilib g++-multilib
 sudo apt install librdkafka-dev
+
+* Слетела лицуха
+sudo find / -type f -name "1cv8conn.pfl" -delete
 
 * RUN 
 g++ producer.cpp -o producer -lrdkafka++ -lrdkafka -lz -lpthread -lrt
@@ -97,3 +104,5 @@ sudo yum update
 sudo yum install gcc gcc-c++ make automake autoconf kernel-devel
 sudo yum install gcc-multilib
 
+
+cd librdkafka && ./configure && make && make install && ldconfig
