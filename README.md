@@ -3,6 +3,7 @@
 https://github.com/perkss/c-kafka-examples/tree/main - здесь есть что то интересное?
 https://github.com/morganstanley/modern-cpp-kafka
 https://github.com/confluentinc/librdkafka/blob/master/examples/rdkafka_example.cpp#L395
+https://developer.confluent.io/get-started/c/#build-producer
 
 https://confluence.bi.group/pages/viewpage.action?pageId=100473262 - планирование
 
