@@ -1,133 +1,97 @@
-#include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <string>
-#include <rdkafkacpp.h>
-static volatile sig_atomic_t run = 1;
+#include <glib.h>
+#include <librdkafka/rdkafka.h>
 
-using std::string;
+#include "common.c"
 
-// static void stop(int sig)
-// {
-// 	run = 0;
-// 	fclose(stdin); /* abort fgets() */
-// }
+#define ARR_SIZE(arr) ( sizeof((arr)) / sizeof((arr[0])) )
 
-// static void
-// dr_msg_cb(rd_kafka_t *rk, const rd_kafka_message_t *rkmessage, void *opaque)
-// {
-// 	if (rkmessage->err)
-// 		fprintf(stderr, "%% Message delivery failed: %s\n",
-// 				rd_kafka_err2str(rkmessage->err));
-// 	else
-// 		fprintf(stderr,
-// 				"%% Message delivered (%zd bytes, "
-// 				"partition %" PRId32 ")\n",
-// 				rkmessage->len, rkmessage->partition);
 
-// 	/* The rkmessage is destroyed automatically by librdkafka */
-// }
+/* Optional per-message delivery callback (triggered by poll() or flush())
+ * when a message has been successfully delivered or permanently
+ * failed delivery (after retries).
+ */
+static void dr_msg_cb (rd_kafka_t *kafka_handle,
+                       const rd_kafka_message_t *rkmessage,
+                       void *opaque) {
+    if (rkmessage->err) {
+        g_error("Message delivery failed: %s", rd_kafka_err2str(rkmessage->err));
+    }
+}
 
-int main()
-{
-	rd_kafka_t *rk;		   /* Producer instance handle */
-	rd_kafka_conf_t *conf; /* Temporary configuration object */
-	char errstr[512];	   /* librdkafka API error reporting buffer */
-	char buf[512];		   /* Message value temporary buffer */
-	const char *brokers;   /* Argument: broker list */
-	const char *topic;	   /* Argument: topic to produce to */
+int main (int argc, char **argv) {
+    rd_kafka_t *producer;
+    rd_kafka_conf_t *conf;
+    char errstr[512];
 
-	brokers = "DC1TMSGBRKR01:9092,DC2TMSGBRKR01:9092,DC3TMSGBRKR01:9092";
-	topic = "test";
+    // Create client configuration
+    conf = rd_kafka_conf_new();
 
-	conf = rd_kafka_conf_new();
+    // User-specific properties that you must set
+    set_config(conf, "bootstrap.servers", "<BOOTSTRAP SERVERS>");
+    set_config(conf, "sasl.username",     "<CLUSTER API KEY>");
+    set_config(conf, "sasl.password",     "<CLUSTER API SECRET>");
 
-	// if (rd_kafka_conf_set(conf, "bootstrap.servers", brokers, errstr,
-	//                                sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	//          fprintf(stderr, "%s\n", errstr);
-	//          return 1;
-	//      }
+    // Fixed properties
+    set_config(conf, "security.protocol", "SASL_SSL");
+    set_config(conf, "sasl.mechanisms",   "PLAIN");
+    set_config(conf, "acks",              "all");
 
-	    //  if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
-	 	// 	errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	 	// 	//fprintf(stderr, "%% %s\n", errstr);
-	 	// 	//exit(1);
-	 	//     return false;
-	 	// }
+    // Install a delivery-error callback.
+    rd_kafka_conf_set_dr_msg_cb(conf, dr_msg_cb);
 
-	 	// if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
-	 	// 	errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	 	// 	//fprintf(stderr, "%% %s\n", errstr);
-	 	// 	//exit(1);
-	 	// 	return false;
-	 	// }
+    // Create the Producer instance.
+    producer = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
+    if (!producer) {
+        g_error("Failed to create new producer: %s", errstr);
+        return 1;
+    }
 
-	// 	if (rd_kafka_conf_set(conf, "sasl.username", "svc.mdm",
-	// 		errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	// 		//fprintf(stderr, "%% %s\n", errstr);
-	// 		//exit(1);
-	// 		return false;
-	// 	}
+    // Configuration object is now owned, and freed, by the rd_kafka_t instance.
+    conf = NULL;
 
-	// 	if (rd_kafka_conf_set(conf, "sasl.password", "pahNg0uv0xohgh6k",
-	// 		errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-	// 		//fprintf(stderr, "%% %s\n", errstr);
-	// 		//exit(1);
-	// 		return false;
-	// 	}
+    // Produce data by selecting random values from these lists.
+    int message_count = 10;
+    const char *topic = "purchases";
+    const char *user_ids[6] = {"eabara", "jsmith", "sgarcia", "jbernard", "htanaka", "awalther"};
+    const char *products[5] = {"book", "alarm clock", "t-shirts", "gift card", "batteries"};
 
-	//     rk = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
-	//         if (!rk) {
-	//                 fprintf(stderr, "%% Failed to create new producer: %s\n",
-	//                         errstr);
-	//                 return 1;
-	//     }
+    for (int i = 0; i < message_count; i++) {
+        const char *key =  user_ids[random() % ARR_SIZE(user_ids)];
+        const char *value =  products[random() % ARR_SIZE(products)];
+        size_t key_len = strlen(key);
+        size_t value_len = strlen(value);
 
-	//     rd_kafka_conf_set_dr_msg_cb(conf, dr_msg_cb);
+        rd_kafka_resp_err_t err;
 
-	//     rk = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
-	//         if (!rk) {
-	//                 fprintf(stderr, "%% Failed to create new producer: %s\n",
-	//                         errstr);
-	//                 return 1;
-	//     }
+        err = rd_kafka_producev(producer,
+                                RD_KAFKA_V_TOPIC(topic),
+                                RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
+                                RD_KAFKA_V_KEY((void*)key, key_len),
+                                RD_KAFKA_V_VALUE((void*)value, value_len),
+                                RD_KAFKA_V_OPAQUE(NULL),
+                                RD_KAFKA_V_END);
 
-	//         /* Signal handler for clean shutdown */
-	//     signal(SIGINT, stop);
+        if (err) {
+            g_error("Failed to produce to topic %s: %s", topic, rd_kafka_err2str(err));
+            return 1;
+        } else {
+            g_message("Produced event to topic %s: key = %12s value = %12s", topic, key, value);
+        }
 
-	//     rd_kafka_resp_err_t err;
+        rd_kafka_poll(producer, 0);
+    }
 
-	//     string t = "fuck";
+    // Block until the messages are all sent.
+    g_message("Flushing final messages..");
+    rd_kafka_flush(producer, 10 * 1000);
 
-	//   err = rd_kafka_producev(
-	// 				rk,
-	// 				RD_KAFKA_V_TOPIC(topic),
-	// 				RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
-	// 				RD_KAFKA_V_KEY(const_cast<char *>(t.c_str()), t.size()),
-	// 				RD_KAFKA_V_VALUE(const_cast<char *>(t.c_str()), t.size()),
-	// 				RD_KAFKA_V_OPAQUE(NULL),
-	// 				RD_KAFKA_V_END);
+    if (rd_kafka_outq_len(producer) > 0) {
+        g_error("%d message(s) were not delivered", rd_kafka_outq_len(producer));
+    }
 
-	// 			if (err) {
-	// 				//fprintf(stderr,	"%% Failed to produce to topic %s: %s\n", topic, rd_kafka_err2str(err));
-	// 				if (err == RD_KAFKA_RESP_ERR__QUEUE_FULL) {
-	// 					return false;
-	// 					//rd_kafka_poll(rk_producer, 1000/*block for max 1000ms*/);
-	// 					//goto retry;
-	// 				}
-	// 			}
-	// 			else {
-	// 				//fprintf(stderr, "%% Enqueued message (%zd bytes) ""for topic %s\n",	len, topic);
-	// 			}
+    g_message("%d events were produced to topic %s.", message_count, topic);
 
-	// 			rd_kafka_poll(rk, 500/*non-blocking*/);
+    rd_kafka_destroy(producer);
 
-	// 			//fprintf(stderr, "%% Flushing final messages..\n");
-	// 			rd_kafka_flush(rk, 1000 /* wait for max 10 seconds */);
-
-	// 			//if (rd_kafka_outq_len(rk_producer) > 0) return false; //fprintf(stderr, "%% %d message(s) were not delivered\n", rd_kafka_outq_len(rk_consumer));
-
-	// 			rd_kafka_destroy(rk);
-
-	return 0;
+    return 0;
 }

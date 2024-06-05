@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+ALL: producer consumer
 
-project(producer)
-
-add_executable(producer producer.cpp)
-
-target_link_libraries(producer rdkafka++)
-
+CFLAGS=-Wall $(shell pkg-config --cflags glib-2.0 rdkafka)
+LDLIBS=$(shell pkg-config --libs glib-2.0 rdkafka)
