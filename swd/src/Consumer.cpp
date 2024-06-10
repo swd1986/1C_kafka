@@ -14,9 +14,7 @@ static volatile sig_atomic_t run = 1;
 using std::string;
 
 std::vector<std::u16string> Consumer::names = {
-	AddComponent(u"AddInNative", []()
-				 { return new Consumer; }),
-	AddComponent(u"SimpleAlias", []()
+	AddComponent(u"Consumer", []()
 				 { return new Consumer; }),
 };
 
