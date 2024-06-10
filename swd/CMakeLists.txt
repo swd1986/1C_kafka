@@ -9,6 +9,8 @@ add_library(${TARGET} SHARED
 		src/AddInNative.rc
 		src/TestComponent.cpp
 		src/TestComponent.h
+		src/Consumer.cpp
+		src/Consumer.h
 		src/stdafx.h
 		librdkafka/rdkafka.h)
 
