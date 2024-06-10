@@ -20,8 +20,17 @@ std::vector<std::u16string> Consumer::names = {
 
 Consumer::Consumer()
 {
+	AddProperty(
+		u"get_message", u"get_message",
+		[&](VH var)
+		{ var = this->get_message(); });
 	AddFunction(u"Consume", u"Consume", [&](VH p_brokers, VH p_topic, VH p_group, VH p_username, VH p_password)
 				{ this->result = this->Consume(p_brokers, p_topic, p_group, p_username, p_password); });
+}
+
+std::string Consumer::get_message()
+{
+	return MB2WCHAR(this->message);
 }
 
 /**
@@ -160,5 +169,7 @@ std::u16string Consumer::Consume(const std::u16string &p_brokers,
 	rd_kafka_consumer_close(rk);
 	rd_kafka_destroy(rk);
 
-	return text + MB2WCHAR((const char *)rkm->payload);
+
+
+	return text + MB2WCHAR("true");
 }
