@@ -11,11 +11,12 @@ private:
     int64_t value;
 
 private:
-    std::string u16string_to_string(const std::u16string& u16str);
+    std::string u16string_to_string(const std::u16string &u16str);
     std::u16string text;
     std::u16string Consume(
         const std::u16string &p_brokers,
         const std::u16string &p_topic,
+        const std::u16string &p_group,
         const std::u16string &p_username,
         const std::u16string &p_password,
         const std::u16string &p_key,
