@@ -128,7 +128,37 @@ std::u16string Consumer::Consume(const std::u16string &p_brokers,
 		return text + MB2WCHAR("error Failed to create new consumer");
 	}
 
-	// swd
+	conf = NULL;
+	rd_kafka_poll_set_consumer(rk);
+	rd_kafka_topic_partition_list_t *subscription;
+	subscription = rd_kafka_topic_partition_list_new(1);
 
-	return text + MB2WCHAR(l_brokers);
+	rd_kafka_topic_partition_list_add(subscription,
+									  l_topic.c_str(),
+									  /* the partition is ignored
+									   * by subscribe() */
+									  RD_KAFKA_PARTITION_UA);
+	rd_kafka_resp_err_t err;
+	err = rd_kafka_subscribe(rk, subscription);
+	if (err)
+	{
+		rd_kafka_topic_partition_list_destroy(subscription);
+		rd_kafka_destroy(rk);
+		return text + MB2WCHAR("error Failed to subscribe to topic");
+	}
+
+	rd_kafka_message_t *rkm = rd_kafka_consumer_poll(rk, 1000);
+	if (!rkm)
+		return MB2WCHAR("timeout"); // timeout: no message
+
+	if (rkm->err)
+	{
+
+		rd_kafka_message_destroy(rkm);
+		return MB2WCHAR("Consumer error"); // timeout: no message
+	}
+
+
+
+	return text + MB2WCHAR((const char *)rkm->payload);
 }
