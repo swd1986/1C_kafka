@@ -24,13 +24,9 @@ Consumer::Consumer()
 		u"get_message", u"get_message",
 		[&](VH var)
 		{ var = this->get_message(); });
+	
 	AddFunction(u"Consume", u"Consume", [&](VH p_brokers, VH p_topic, VH p_group, VH p_username, VH p_password)
 				{ this->result = this->Consume(p_brokers, p_topic, p_group, p_username, p_password); });
-}
-
-std::string Consumer::get_message()
-{
-	return MB2WCHAR(this->message);
 }
 
 /**
@@ -63,6 +59,13 @@ std::string Consumer::u16string_to_string(const std::u16string &u16str)
 	return converter.to_bytes(u16str);
 }
 
+std::u16string Consumer::get_message()
+{
+	return message;
+	//return MB2WCHAR(message);
+	//return MB2WCHAR("dcsdcs");
+}
+
 std::u16string Consumer::Consume(const std::u16string &p_brokers,
 								 const std::u16string &p_topic,
 								 const std::u16string &p_group,
@@ -85,56 +88,56 @@ std::u16string Consumer::Consume(const std::u16string &p_brokers,
 						  sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error bootstrap.servers");
+		return MB2WCHAR("error bootstrap.servers");
 	}
 
 	if (rd_kafka_conf_set(conf, "group.id", l_group.c_str(), errstr,
 						  sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error group.id");
+		return MB2WCHAR("error group.id");
 	}
 
 	if (rd_kafka_conf_set(conf, "auto.offset.reset", "earliest", errstr,
 						  sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error auto.offset.reset");
+		return MB2WCHAR("error auto.offset.reset");
 	}
 
 	if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error security.protocol");
+		return MB2WCHAR("error security.protocol");
 	}
 
 	if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error sasl.mechanism");
+		return MB2WCHAR("error sasl.mechanism");
 	}
 
 	if (rd_kafka_conf_set(conf, "sasl.username", l_username.c_str(),
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error sasl.username");
+		return MB2WCHAR("error sasl.username");
 	}
 
 	if (rd_kafka_conf_set(conf, "sasl.password", l_password.c_str(),
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error sasl.password");
+		return MB2WCHAR("error sasl.password");
 	}
 
 	rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr));
 	if (!rk)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error Failed to create new consumer");
+		return MB2WCHAR("error Failed to create new consumer");
 	}
 
 	conf = NULL;
@@ -153,7 +156,7 @@ std::u16string Consumer::Consume(const std::u16string &p_brokers,
 	{
 		rd_kafka_topic_partition_list_destroy(subscription);
 		rd_kafka_destroy(rk);
-		return text + MB2WCHAR("error Failed to subscribe to topic");
+		return MB2WCHAR("error Failed to subscribe to topic");
 	}
 
 	rd_kafka_message_t *rkm = rd_kafka_consumer_poll(rk, 5000);
@@ -169,7 +172,7 @@ std::u16string Consumer::Consume(const std::u16string &p_brokers,
 	rd_kafka_consumer_close(rk);
 	rd_kafka_destroy(rk);
 
+	this->message = MB2WCHAR((const char *)rkm->payload);
 
-
-	return text + MB2WCHAR("true");
+	return MB2WCHAR("true");
 }
