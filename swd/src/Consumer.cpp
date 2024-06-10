@@ -75,36 +75,42 @@ std::u16string Consumer::Consume( const std::u16string &p_brokers,
 	if (rd_kafka_conf_set(conf, "bootstrap.servers", l_brokers.c_str(), errstr,
 						  sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
+		rd_kafka_conf_destroy(conf);
 		return text + MB2WCHAR("error bootstrap.servers");
 	}
 
 	if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
+		rd_kafka_conf_destroy(conf);
 		return text + MB2WCHAR("error security.protocol");
 	}
 
 	if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
+		rd_kafka_conf_destroy(conf);
 		return text + MB2WCHAR("error sasl.mechanism");
 	}
 
 	if (rd_kafka_conf_set(conf, "sasl.username", l_username.c_str(),
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
+		rd_kafka_conf_destroy(conf);
 		return text + MB2WCHAR("error sasl.username");
 	}
 
 	if (rd_kafka_conf_set(conf, "sasl.password", l_password.c_str(),
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
+		rd_kafka_conf_destroy(conf);
 		return text + MB2WCHAR("error sasl.password");
 	}
 
 	rk = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
 	if (!rk)
 	{
+		rd_kafka_conf_destroy(conf);
 		return text + MB2WCHAR("error Failed to create new producer");
 	}
 
