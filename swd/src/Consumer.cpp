@@ -147,18 +147,18 @@ std::u16string Consumer::Consume(const std::u16string &p_brokers,
 		return text + MB2WCHAR("error Failed to subscribe to topic");
 	}
 
-	rd_kafka_message_t *rkm = rd_kafka_consumer_poll(rk, 1000);
+	rd_kafka_message_t *rkm = rd_kafka_consumer_poll(rk, 5000);
 	if (!rkm)
 		return MB2WCHAR("timeout"); // timeout: no message
 
 	if (rkm->err)
 	{
-
 		rd_kafka_message_destroy(rkm);
 		return MB2WCHAR("Consumer error"); // timeout: no message
 	}
-
-
+	rd_kafka_message_destroy(rkm);
+	rd_kafka_consumer_close(rk);
+	rd_kafka_destroy(rk);
 
 	return text + MB2WCHAR((const char *)rkm->payload);
 }
