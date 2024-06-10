@@ -60,71 +60,71 @@ std::u16string Consumer::Consume( 			const std::u16string &p_brokers,
 											const std::u16string &p_password
 											)
 {
-	rd_kafka_t *rk;		   /* Producer instance handle */
-	rd_kafka_conf_t *conf; /* Temporary configuration object */
-	char errstr[512];	   /* librdkafka API error reporting buffer */
+	// rd_kafka_t *rk;		   /* Producer instance handle */
+	// rd_kafka_conf_t *conf; /* Temporary configuration object */
+	// char errstr[512];	   /* librdkafka API error reporting buffer */
 	
 	string l_brokers = u16string_to_string(p_brokers);
-	string l_topic = u16string_to_string(p_topic);
-	string l_group = u16string_to_string(p_group);
-	string l_username = u16string_to_string(p_username);
-	string l_password = u16string_to_string(p_password);
+	// string l_topic = u16string_to_string(p_topic);
+	// string l_group = u16string_to_string(p_group);
+	// string l_username = u16string_to_string(p_username);
+	// string l_password = u16string_to_string(p_password);
 	
-	conf = rd_kafka_conf_new();
+	// conf = rd_kafka_conf_new();
 
-	if (rd_kafka_conf_set(conf, "bootstrap.servers", l_brokers.c_str(), errstr,
-						  sizeof(errstr)) != RD_KAFKA_CONF_OK)
-	{
-		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error bootstrap.servers");
-	}
+	// if (rd_kafka_conf_set(conf, "bootstrap.servers", l_brokers.c_str(), errstr,
+	// 					  sizeof(errstr)) != RD_KAFKA_CONF_OK)
+	// {
+	// 	rd_kafka_conf_destroy(conf);
+	// 	return text + MB2WCHAR("error bootstrap.servers");
+	// }
 
-	if (rd_kafka_conf_set(conf, "group.id", l_group.c_str(), errstr,
-                              sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-        rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error group.id");
-    }
+	// if (rd_kafka_conf_set(conf, "group.id", l_group.c_str(), errstr,
+    //                           sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+    //     rd_kafka_conf_destroy(conf);
+	// 	return text + MB2WCHAR("error group.id");
+    // }
 
-	if (rd_kafka_conf_set(conf, "auto.offset.reset", "earliest", errstr,
-                              sizeof(errstr)) != RD_KAFKA_CONF_OK) {
-        rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error auto.offset.reset");
-    }
+	// if (rd_kafka_conf_set(conf, "auto.offset.reset", "earliest", errstr,
+    //                           sizeof(errstr)) != RD_KAFKA_CONF_OK) {
+    //     rd_kafka_conf_destroy(conf);
+	// 	return text + MB2WCHAR("error auto.offset.reset");
+    // }
 
-	if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
-						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
-	{
-		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error security.protocol");
-	}
+	// if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
+	// 					  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+	// {
+	// 	rd_kafka_conf_destroy(conf);
+	// 	return text + MB2WCHAR("error security.protocol");
+	// }
 
-	if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
-						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
-	{
-		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error sasl.mechanism");
-	}
+	// if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
+	// 					  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+	// {
+	// 	rd_kafka_conf_destroy(conf);
+	// 	return text + MB2WCHAR("error sasl.mechanism");
+	// }
 
-	if (rd_kafka_conf_set(conf, "sasl.username", l_username.c_str(),
-						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
-	{
-		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error sasl.username");
-	}
+	// if (rd_kafka_conf_set(conf, "sasl.username", l_username.c_str(),
+	// 					  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+	// {
+	// 	rd_kafka_conf_destroy(conf);
+	// 	return text + MB2WCHAR("error sasl.username");
+	// }
 
-	if (rd_kafka_conf_set(conf, "sasl.password", l_password.c_str(),
-						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
-	{
-		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error sasl.password");
-	}
+	// if (rd_kafka_conf_set(conf, "sasl.password", l_password.c_str(),
+	// 					  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+	// {
+	// 	rd_kafka_conf_destroy(conf);
+	// 	return text + MB2WCHAR("error sasl.password");
+	// }
 
-	rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr));
-	if (!rk)
-	{
-		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error Failed to create new consumer");
-	}
+	// rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr));
+	// if (!rk)
+	// {
+	// 	rd_kafka_conf_destroy(conf);
+	// 	return text + MB2WCHAR("error Failed to create new consumer");
+	// }
 
 	//swd
 	

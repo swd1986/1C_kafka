@@ -1,5 +1,5 @@
-#ifndef __TESTCOMPONENT_H__
-#define __TESTCOMPONENT_H__
+#ifndef __CONSUMER_H__
+#define __CONSUMER_H__
 
 #include "AddInNative.h"
 
@@ -21,4 +21,4 @@ private:
         const std::u16string &p_password
         );
 };
-#endif //__TESTCOMPONENT_H__
+#endif //__CONSUMER_H__
