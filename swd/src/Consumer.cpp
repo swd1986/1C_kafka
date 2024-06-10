@@ -20,8 +20,8 @@ std::vector<std::u16string> Consumer::names = {
 
 Consumer::Consumer()
 {
-	AddFunction(u"Consume", u"Consume", [&](VH p_brokers, VH p_topic,VH p_group, VH p_username, VH p_password, VH p_key, VH p_message)
-				{ this->result = this->Consume(p_brokers, p_topic, p_group, p_username, p_password, p_key, p_message); });
+	AddFunction(u"Consume", u"Consume", [&](VH p_brokers, VH p_topic,VH p_group, VH p_username, VH p_password)
+				{ this->result = this->Consume(p_brokers, p_topic, p_group, p_username, p_password); });
 }
 
 /**
@@ -57,9 +57,7 @@ std::u16string Consumer::Consume( 			const std::u16string &p_brokers,
 											const std::u16string &p_topic,
 											const std::u16string &p_group,
 											const std::u16string &p_username,
-											const std::u16string &p_password,
-											const std::u16string &p_key,	
-											const std::u16string &p_message
+											const std::u16string &p_password
 											)
 {
 	rd_kafka_t *rk;		   /* Producer instance handle */

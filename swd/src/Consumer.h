@@ -18,8 +18,7 @@ private:
         const std::u16string &p_topic,
         const std::u16string &p_group,
         const std::u16string &p_username,
-        const std::u16string &p_password,
-        const std::u16string &p_key,
-        const std::u16string &p_message);
+        const std::u16string &p_password
+        );
 };
 #endif //__TESTCOMPONENT_H__
