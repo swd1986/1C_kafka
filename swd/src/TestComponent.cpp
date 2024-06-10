@@ -97,18 +97,23 @@ std::string u16string_to_string(const std::u16string& u16str) {
     return converter.to_bytes(u16str);
 }
 
-std::u16string TestComponent::SendProducer( const std::u16string &p_brokers, 
-											const std::u16string &p_message)
+std::u16string TestComponent::SendProducer( const std::u16string &p_brokers,
+											const std::u16string &p_topic,
+											const std::u16string &p_username,
+											const std::u16string &p_password,
+											const std::u16string &p_key,	
+											const std::u16string &p_message
+											)
 {
 	rd_kafka_t *rk;		   /* Producer instance handle */
 	rd_kafka_conf_t *conf; /* Temporary configuration object */
 	char errstr[512];	   /* librdkafka API error reporting buffer */
-	char buf[512];		   /* Message value temporary buffer */
-	const char *topic;	   /* Argument: topic to produce to */
-
+	
 	string l_brokers = u16string_to_string(p_brokers);
-	topic = "test";
-
+	string l_topic = u16string_to_string(p_topic);
+	string l_username = u16string_to_string(p_username);
+	string l_password = u16string_to_string(p_password);
+	
 	conf = rd_kafka_conf_new();
 
 	if (rd_kafka_conf_set(conf, "bootstrap.servers", l_brokers.c_str(), errstr,
@@ -129,13 +134,13 @@ std::u16string TestComponent::SendProducer( const std::u16string &p_brokers,
 		return text + MB2WCHAR("error sasl.mechanism");
 	}
 
-	if (rd_kafka_conf_set(conf, "sasl.username", "svc.mdm",
+	if (rd_kafka_conf_set(conf, "sasl.username", l_username.c_str(),
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		return text + MB2WCHAR("error sasl.username");
 	}
 
-	if (rd_kafka_conf_set(conf, "sasl.password", "pahNg0uv0xohgh6k",
+	if (rd_kafka_conf_set(conf, "sasl.password", l_password.c_str(),
 						  errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		return text + MB2WCHAR("error sasl.password");
@@ -153,12 +158,13 @@ std::u16string TestComponent::SendProducer( const std::u16string &p_brokers,
 
 	rd_kafka_resp_err_t err;
 
+	string l_key = u16string_to_string(p_key);
 	string l_message = u16string_to_string(p_message);
 	err = rd_kafka_producev(
 		rk,
-		RD_KAFKA_V_TOPIC(topic),
+		RD_KAFKA_V_TOPIC(l_topic.c_str()),
 		RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
-		RD_KAFKA_V_KEY(const_cast<char *>(l_message.c_str()), l_message.size()),
+		RD_KAFKA_V_KEY(const_cast<char *>(l_key.c_str()), l_key.size()),
 		RD_KAFKA_V_VALUE(const_cast<char *>(l_message.c_str()), l_message.size()),
 		RD_KAFKA_V_OPAQUE(NULL),
 		RD_KAFKA_V_END);
