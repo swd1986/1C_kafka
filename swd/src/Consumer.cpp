@@ -121,11 +121,11 @@ std::u16string Consumer::Consume( 			const std::u16string &p_brokers,
 		return text + MB2WCHAR("error sasl.password");
 	}
 
-	rk = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
+	rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr));
 	if (!rk)
 	{
 		rd_kafka_conf_destroy(conf);
-		return text + MB2WCHAR("error Failed to create new producer");
+		return text + MB2WCHAR("error Failed to create new consumer");
 	}
 
 	//swd
