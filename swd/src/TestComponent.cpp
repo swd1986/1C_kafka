@@ -14,9 +14,9 @@ static volatile sig_atomic_t run = 1;
 using std::string;
 
 std::vector<std::u16string> TestComponent::names = {
-	AddComponent(u"AddInNative", []()
-				 { return new TestComponent; }),
-	AddComponent(u"SimpleAlias", []()
+	// AddComponent(u"AddInNative", []()
+	// 			 { return new TestComponent; }),
+	AddComponent(u"Producer", []()
 				 { return new TestComponent; }),
 };
 
