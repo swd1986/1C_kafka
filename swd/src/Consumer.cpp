@@ -15,7 +15,9 @@ using std::string;
 
 std::vector<std::u16string> Consumer::names = {
 	AddComponent(u"AddInNative", []()
-				 { return new Consumer; })
+				 { return new Consumer; }),
+	AddComponent(u"SimpleAlias", []()
+				 { return new Consumer; }),
 };
 
 Consumer::Consumer()
