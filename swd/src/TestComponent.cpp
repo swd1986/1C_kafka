@@ -45,8 +45,8 @@ TestComponent::TestComponent()
 				{ this->result = this->getTestString(); });
 	AddFunction(u"GetVersion", u"ПолучитьВерсию", [&]()
 				{ this->result = this->getVersion(); });
-	AddFunction(u"SendProducer", u"SendProducer", [&](VH par1, VH par2)
-				{ this->result = this->SendProducer(par1, par2); });
+	AddFunction(u"SendProducer", u"SendProducer", [&](VH p_brokers, VH p_topic, VH p_username, VH p_password, VH p_key, VH p_message)
+				{ this->result = this->SendProducer(p_brokers, p_topic, p_username, p_password, p_key, p_message); });
 
 	AddProcedure(u"SetText", u"УстановитьТекст", [&](VH par)
 				 { this->setTestString(par); }, {{0, u"default: "}});
@@ -74,7 +74,7 @@ std::u16string TestComponent::getVersion()
 static void stop(int sig)
 {
 	run = 0;
-	// fclose(stdin); /* abort fgets() */
+	fclose(stdin); /* abort fgets() */
 }
 
 static void
