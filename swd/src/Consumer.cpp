@@ -48,7 +48,7 @@ dr_msg_cb(rd_kafka_t *rk, const rd_kafka_message_t *rkmessage, void *opaque)
 	/* The rkmessage is destroyed automatically by librdkafka */
 }
 
-std::string u16string_to_string(const std::u16string& u16str) {
+std::string Consumer::u16string_to_string(const std::u16string& u16str) {
     std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
     return converter.to_bytes(u16str);
 }

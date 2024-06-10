@@ -11,6 +11,7 @@ private:
     int64_t value;
 
 private:
+    std::string u16string_to_string(const std::u16string& u16str);
     std::u16string text;
     std::u16string Consume(
         const std::u16string &p_brokers,
@@ -19,6 +20,5 @@ private:
         const std::u16string &p_password,
         const std::u16string &p_key,
         const std::u16string &p_message);
-    void setTestString(const std::u16string &text);
 };
 #endif //__TESTCOMPONENT_H__
