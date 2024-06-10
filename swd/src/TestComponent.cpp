@@ -3,7 +3,7 @@
 #include <signal.h>
 #include <string.h>
 #include <string>
-#include <librdkafka/rdkafka.h>
+//#include <librdkafka/rdkafka.h>
 #include <iostream>
 #include <ctime>
 
@@ -50,27 +50,6 @@ TestComponent::TestComponent()
 				 { this->setTestString(par); }, {{0, u"default: "}});
 }
 
-static void stop(int sig)
-{
-	run = 0;
-	fclose(stdin); /* abort fgets() */
-}
-
-static void
-dr_msg_cb(rd_kafka_t *rk, const rd_kafka_message_t *rkmessage, void *opaque)
-{
-	if (rkmessage->err)
-		fprintf(stderr, "%% Message delivery failed: %s\n",
-				rd_kafka_err2str(rkmessage->err));
-	else
-		fprintf(stderr,
-				"%% Message delivered (%zd bytes, "
-				"partition %" PRId32 ")\n",
-				rkmessage->len, rkmessage->partition);
-
-	/* The rkmessage is destroyed automatically by librdkafka */
-}
-
 std::u16string TestComponent::getTestString()
 {
 	time_t rawtime;
@@ -89,17 +68,17 @@ std::u16string TestComponent::getVersion()
 
 std::u16string TestComponent::SendProducer(const std::u16string &p_text1, const std::u16string &p_text2)
 {
-	rd_kafka_t *rk;		   /* Producer instance handle */
-	rd_kafka_conf_t *conf; /* Temporary configuration object */
-	char errstr[512];	   /* librdkafka API error reporting buffer */
-	char buf[512];		   /* Message value temporary buffer */
-	const char *brokers;   /* Argument: broker list */
-	const char *topic;	   /* Argument: topic to produce to */
+	//rd_kafka_t *rk;		   /* Producer instance handle */
+	//rd_kafka_conf_t *conf; /* Temporary configuration object */
+	//char errstr[512];	   /* librdkafka API error reporting buffer */
+	//char buf[512];		   /* Message value temporary buffer */
+	//const char *brokers;   /* Argument: broker list */
+	//const char *topic;	   /* Argument: topic to produce to */
 
-	brokers = "DC1TMSGBRKR01:9092,DC2TMSGBRKR01:9092,DC3TMSGBRKR01:9092";
-	topic = "test";
+	//brokers = "DC1TMSGBRKR01:9092,DC2TMSGBRKR01:9092,DC3TMSGBRKR01:9092";
+	//topic = "test";
 
-	conf = rd_kafka_conf_new();
+	//conf = rd_kafka_conf_new();
 
 	// if (rd_kafka_conf_set(conf, "bootstrap.servers", brokers, errstr,
 	// 					  sizeof(errstr)) != RD_KAFKA_CONF_OK)

@@ -5,6 +5,7 @@
             "label": "C/C++: g++-13 build active file",
             "command": "/usr/bin/g++-13",
             "args": [
+                "-I/usr/include/glib-2.0",
                 "-fdiagnostics-color=always",
                 "-g",
                 "${file}",
