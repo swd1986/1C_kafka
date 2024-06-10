@@ -97,21 +97,21 @@ std::string u16string_to_string(const std::u16string& u16str) {
     return converter.to_bytes(u16str);
 }
 
-std::u16string TestComponent::SendProducer(const std::u16string &p_text1, const std::u16string &p_text2)
+std::u16string TestComponent::SendProducer( const std::u16string &p_brokers, 
+											const std::u16string &p_message)
 {
 	rd_kafka_t *rk;		   /* Producer instance handle */
 	rd_kafka_conf_t *conf; /* Temporary configuration object */
 	char errstr[512];	   /* librdkafka API error reporting buffer */
 	char buf[512];		   /* Message value temporary buffer */
-	const char *brokers;   /* Argument: broker list */
 	const char *topic;	   /* Argument: topic to produce to */
 
-	brokers = "DC1TMSGBRKR01:9092,DC2TMSGBRKR01:9092,DC3TMSGBRKR01:9092";
+	string l_brokers = u16string_to_string(p_brokers);
 	topic = "test";
 
 	conf = rd_kafka_conf_new();
 
-	if (rd_kafka_conf_set(conf, "bootstrap.servers", brokers, errstr,
+	if (rd_kafka_conf_set(conf, "bootstrap.servers", l_brokers.c_str(), errstr,
 						  sizeof(errstr)) != RD_KAFKA_CONF_OK)
 	{
 		return text + MB2WCHAR("error bootstrap.servers");
@@ -153,13 +153,13 @@ std::u16string TestComponent::SendProducer(const std::u16string &p_text1, const 
 
 	rd_kafka_resp_err_t err;
 
-	string t = u16string_to_string(p_text1);
+	string l_message = u16string_to_string(p_message);
 	err = rd_kafka_producev(
 		rk,
 		RD_KAFKA_V_TOPIC(topic),
 		RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
-		RD_KAFKA_V_KEY(const_cast<char *>(t.c_str()), t.size()),
-		RD_KAFKA_V_VALUE(const_cast<char *>(t.c_str()), t.size()),
+		RD_KAFKA_V_KEY(const_cast<char *>(l_message.c_str()), l_message.size()),
+		RD_KAFKA_V_VALUE(const_cast<char *>(l_message.c_str()), l_message.size()),
 		RD_KAFKA_V_OPAQUE(NULL),
 		RD_KAFKA_V_END);
 
