@@ -54,7 +54,7 @@ if (UNIX)
 		set(CMAKE_C_FLAGS "-m64 ${CMAKE_C_FLAGS}")
 		set(CMAKE_CXX_FLAGS "-m64 ${CMAKE_CXX_FLAGS}")
 	endif ()
-	target_link_libraries(${PROJECT_NAME} -static-libstdc++)
+	#target_link_libraries(${PROJECT_NAME} -static-libstdc++)
 	target_link_libraries(${PROJECT_NAME} -lrdkafka)
 	
 else(UNIX)
