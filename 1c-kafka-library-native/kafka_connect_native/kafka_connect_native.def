@@ -1,7 +1,0 @@
-LIBRARY    "kafka_connect_native"
-
-EXPORTS
-GetClassObject
-DestroyObject
-GetClassNames
-SetPlatformCapabilities
