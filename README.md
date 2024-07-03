@@ -27,6 +27,11 @@ https://docs.confluent.io/kafka-clients/librdkafka/current/overview.html#cplus-i
 DEB(у меня) RPM (цель)
 
 
+* DOCKER
+docker build -t swd_oracle_linux .
+docker run -d -p 22:22 swd_oracle_linux
+
+
 * INSTALL 
 
 sudo apt-get update -y
