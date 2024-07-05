@@ -1,6 +1,6 @@
-TARGET=AddInNative.so
+TARGET=1C_kafka.so
 
-SOURCES=AddInNative.cpp \
+SOURCES=1C_kafka.cpp \
 	dllmain.cpp \
 	stdafx.cpp 
 
