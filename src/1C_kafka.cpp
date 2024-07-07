@@ -344,7 +344,7 @@ long CKAFKA::GetNParams(const long lMethodNum)
 {
 	switch (lMethodNum)
 	{
-	case eMethGetInfo:
+	case eGetInfo:
 		return 0;
 	case eProduce:
 		return 6;
@@ -362,7 +362,7 @@ bool CKAFKA::GetParamDefValue(const long lMethodNum, const long lParamNum,
 
 	switch (lMethodNum)
 	{
-	case eMethGetInfo:
+	case eGetInfo:
 		return true;
 	case eProduce:
 		return true;
@@ -386,7 +386,7 @@ bool CKAFKA::HasRetVal(const long lMethodNum)
 {
 	switch (lMethodNum)
 	{
-	case eMethGetInfo:
+	case eGetInfo:
 		return true;
 	case eProduce:
 		return true;
@@ -515,7 +515,7 @@ bool CKAFKA::CallAsFunc(const long lMethodNum,
 {
 	switch (lMethodNum)
 	{
-	case eMethGetInfo:
+	case eGetInfo:
 		TV_VT(pvarRetValue) = VTYPE_PSTR;
 		string_to_tVariant(VERSION_STRING, pvarRetValue);
 		return true;

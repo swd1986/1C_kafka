@@ -19,7 +19,7 @@ public:
 
     enum Methods
     {
-        eMethGetInfo = 0,
+        eGetInfo = 0,
         eProduce,
         eMethEnable,
         eMethDisable,
