@@ -20,15 +20,14 @@ public:
     enum Methods
     {
         eMethGetInfo = 0,
+        eProduce,
         eMethEnable,
         eMethDisable,
         eMethShowInStatusLine,
         eMethStartTimer,
         eMethStopTimer,
-        eMethLoadPicture,
         eMethShowMsgBox,
-		eLoopback,
-        eMethLast      // Always last
+		eMethLast      // Always last
     };
 
     CKAFKA(void);

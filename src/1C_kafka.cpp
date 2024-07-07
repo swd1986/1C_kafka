@@ -40,7 +40,7 @@ static const wchar_t* g_PropNamesRu[] = {
 //swd методы EN
 static const wchar_t* g_MethodNames[] = {
 	L"GetVersion",
-	L"Enable",
+	L"SendProducer",
 	L"Disable",
 	L"ShowInStatusLine",
 	L"StartTimer",
@@ -53,7 +53,7 @@ static const wchar_t* g_MethodNames[] = {
 //swd методы RU
 static const wchar_t* g_MethodNamesRu[] = {
 	L"ПолучитьВерсию",
-	L"Включить",
+	L"SendProducer",
 	L"Выключить",
 	L"ПоказатьВСтрокеСтатуса",
 	L"СтартТаймер",
@@ -346,11 +346,7 @@ long CKAFKA::GetNParams(const long lMethodNum)
 	{
 	case eMethGetInfo:
 		return 0;
-	case eMethShowInStatusLine:
-		return 1;
-	case eMethLoadPicture:
-		return 1;
-	case eLoopback:
+	case eProduce:
 		return 1;
 	default:
 		return 0;
@@ -391,8 +387,7 @@ bool CKAFKA::HasRetVal(const long lMethodNum)
 	{
 	case eMethGetInfo:
 		return true;
-	case eMethLoadPicture:
-	case eLoopback:
+	case eProduce:
 		return true;
 	default:
 		return false;
@@ -524,15 +519,8 @@ bool CKAFKA::CallAsFunc(const long lMethodNum,
 		string_to_tVariant(VERSION_STRING, pvarRetValue);
 		return true;
 
-	case eLoopback:
+	case eProduce:
 		if (lSizeArray != 1 || !paParams)
-			return false;
-
-		string_to_tVariant(VERSION_STRING, pvarRetValue);
-		return true;
-
-	case eMethLoadPicture:
-		if (!lSizeArray || !paParams)
 			return false;
 
 		string_to_tVariant(VERSION_STRING, pvarRetValue);
