@@ -521,9 +521,7 @@ bool CKAFKA::CallAsFunc(const long lMethodNum,
 		return true;
 
 	case eProduce:
-		if (lSizeArray != 1 || !paParams)
-			return false;
-
+		TV_VT(pvarRetValue) = VTYPE_PSTR;
 		string_to_tVariant(VERSION_STRING, pvarRetValue);
 		return true;
 
