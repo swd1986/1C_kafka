@@ -347,7 +347,7 @@ long CKAFKA::GetNParams(const long lMethodNum)
 	case eMethGetInfo:
 		return 0;
 	case eProduce:
-		return 1;
+		return 6;
 	default:
 		return 0;
 	}
