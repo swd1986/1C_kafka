@@ -364,7 +364,8 @@ bool CKAFKA::GetParamDefValue(const long lMethodNum, const long lParamNum,
 	{
 	case eMethGetInfo:
 		return true;
-		break;
+	case eProduce:
+		return true;
 	case eMethEnable:
 	case eMethDisable:
 	case eMethShowInStatusLine:
