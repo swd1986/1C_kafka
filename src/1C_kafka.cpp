@@ -10,7 +10,6 @@
 #include <sys/time.h>
 #include <locale.h>
 #include <string>
-
 #endif
 
 #include <stdio.h>
@@ -18,6 +17,7 @@
 #include "1C_kafka.h"
 #include <string>
 #include <locale.h>
+#include "version.h"
 
 #define TIME_LEN 65
 
@@ -517,27 +517,25 @@ bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 bool CKAFKA::CallAsFunc(const long lMethodNum,
 	tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray)
 {
-	std::string testStr = "Привет!";
-
 	switch (lMethodNum)
 	{
 	case eMethGetInfo:
 		TV_VT(pvarRetValue) = VTYPE_PSTR;
-		string_to_tVariant(testStr, pvarRetValue);
+		string_to_tVariant(VERSION_STRING, pvarRetValue);
 		return true;
 
 	case eLoopback:
 		if (lSizeArray != 1 || !paParams)
 			return false;
 
-		string_to_tVariant(testStr, pvarRetValue);
+		string_to_tVariant(VERSION_STRING, pvarRetValue);
 		return true;
 
 	case eMethLoadPicture:
 		if (!lSizeArray || !paParams)
 			return false;
 
-		string_to_tVariant(testStr, pvarRetValue);
+		string_to_tVariant(VERSION_STRING, pvarRetValue);
 		return true;
 
 	default:

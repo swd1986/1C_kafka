@@ -221,6 +221,7 @@
   <ItemGroup>
     <ClInclude Include="1C_kafka.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="linux_build.sh" />
