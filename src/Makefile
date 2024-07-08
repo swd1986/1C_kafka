@@ -26,7 +26,7 @@ all: $(TARGET)
 	@rm -f $*.d.tmp
 
 $(TARGET): $(OBJECTS) Makefile
-	g++ $(CXXLAGS) -shared $(OBJECTS) -o $(TARGET) $(addprefix -l, $(LIBS))
+	g++ $(CXXLAGS) $(LDFLAGS) -shared $(OBJECTS) -o $(TARGET) $(addprefix -l, $(LIBS))
 
 clean:
 	-rm $(TARGET) *.o *.d
