@@ -456,11 +456,11 @@ std::string CKAFKA::produce(tVariant* paParams)
 	}
 	catch (const std::runtime_error& e) {
 		// Handle the exception
-		return "Caught a runtime error: " + e.what() + std::endl;
+		return "Caught a runtime error: " + e.what();
 }
 	catch (...) {
 		// Catch any other exceptions
-		return "Caught an unknown exception" + std::endl;
+		return "Caught an unknown exception";
 	}
 	#endif
 
