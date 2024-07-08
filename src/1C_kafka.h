@@ -58,7 +58,7 @@ public:
     virtual void ADDIN_API SetLocale(const WCHAR_T* loc);
     //swd
     virtual std::string ADDIN_API produce(tVariant* paParams);
-
+    virtual std::string ADDIN_API wstringToString(const wchar_t* wstr);
     
 private:
     long findName(const wchar_t* names[], const wchar_t* name, const uint32_t size) const;

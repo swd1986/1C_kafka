@@ -19,6 +19,8 @@
 #include <string>
 #include <locale.h>
 #include "version.h"
+#include <iostream>
+#include <codecvt>
 
 
 #define TIME_LEN 65
@@ -403,6 +405,12 @@ bool CKAFKA::CallAsProc(const long lMethodNum,
 	return true;
 }
 //---------------------------------------------------------------------------//
+// swd Helper function to convert wchar_t* to std::string
+std::string CKAFKA::wstringToString(const wchar_t* wstr) {
+	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+	return converter.to_bytes(wstr);
+}
+//---------------------------------------------------------------------------//
 bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 	char* t1;
 	TV_VT(val) = VTYPE_PSTR;  // Assuming this means string
@@ -423,9 +431,9 @@ bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 std::string CKAFKA::produce(tVariant* paParams)
 {
 	//brokers
-	std::string p_brokers = (paParams)->pstrVal;
+	wchar_t* p_brokers = (paParams)->pwstrVal;
 
-	return p_brokers;
+	return wstringToString(p_brokers);
 }
 
 //---------------------------------------------------------------------------//
@@ -449,56 +457,6 @@ bool CKAFKA::CallAsFunc(const long lMethodNum,
 
 	}
 }
-//---------------------------------------------------------------------------//
-// This code will work only on the client!
-#if !defined( __linux__ ) && !defined(__APPLE__)
-VOID CALLBACK MyTimerProc(PVOID lpParam, BOOLEAN TimerOrWaitFired)
-{
-	if (!pAsyncEvent)
-		return;
-	DWORD dwTime = 0;
-	wchar_t* who = L"ComponentNative", * what = L"Timer";
-
-	wchar_t* wstime = new wchar_t[TIME_LEN];
-	if (wstime)
-	{
-		wmemset(wstime, 0, TIME_LEN);
-		time_t vtime;
-		time(&vtime);
-		::_ui64tow_s(vtime, wstime, TIME_LEN, 10);
-		pAsyncEvent->ExternalEvent(who, what, wstime);
-		delete[] wstime;
-	}
-}
-#else
-void MyTimerProc(int sig)
-{
-	if (!pAsyncEvent)
-		return;
-
-	WCHAR_T* who = 0, * what = 0, * wdata = 0;
-	wchar_t* data = 0;
-	time_t dwTime = time(NULL);
-
-	data = new wchar_t[TIME_LEN];
-
-	if (data)
-	{
-		wmemset(data, 0, TIME_LEN);
-		swprintf(data, TIME_LEN, L"%ul", dwTime);
-		::convToShortWchar(&who, L"ComponentNative");
-		::convToShortWchar(&what, L"Timer");
-		::convToShortWchar(&wdata, data);
-
-		pAsyncEvent->ExternalEvent(who, what, wdata);
-
-		delete[] who;
-		delete[] what;
-		delete[] wdata;
-		delete[] data;
-	}
-}
-#endif
 //---------------------------------------------------------------------------//
 void CKAFKA::SetLocale(const WCHAR_T* loc)
 {
