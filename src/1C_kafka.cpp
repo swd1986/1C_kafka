@@ -10,6 +10,7 @@
 #include <sys/time.h>
 #include <locale.h>
 #include <string>
+#include <stdexcept>
 #include <librdkafka/rdkafka.h>
 #endif
 
@@ -20,6 +21,7 @@
 #include <string>
 #include <locale.h>
 #include "version.h"
+#include <stdexcept>
 
 #define TIME_LEN 65
 
