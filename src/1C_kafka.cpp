@@ -456,8 +456,8 @@ std::string CKAFKA::produce(tVariant* paParams)
 	}
 	catch (const std::runtime_error& e) {
 		// Handle the exception
-		return "Caught a runtime error: " + e.what();
-}
+		return e.what();
+	}
 	catch (...) {
 		// Catch any other exceptions
 		return "Caught an unknown exception";
