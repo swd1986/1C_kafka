@@ -9,6 +9,7 @@ LIBS=pthread
 
 OBJECTS=$(SOURCES:.cpp=.o)
 INCLUDES=-I../../include
+INCLUDES=-I../../librdkafka
 CXXLAGS=$(CXXFLAGS) $(INCLUDES) -m32 -finput-charset=WINDOWS-1251 -fPIC
 LDFLAGS = -lrdkafka++
 
