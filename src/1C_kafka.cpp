@@ -420,6 +420,12 @@ bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 	return true;
 }
 //---------------------------------------------------------------------------//
+std::string CKAFKA::produce(tVariant* paParams)
+{
+	return "Привет";
+}
+
+//---------------------------------------------------------------------------//
 bool CKAFKA::CallAsFunc(const long lMethodNum,
 	tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray)
 {

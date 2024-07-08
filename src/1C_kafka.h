@@ -56,6 +56,8 @@ public:
                 tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray);
     // LocaleBase
     virtual void ADDIN_API SetLocale(const WCHAR_T* loc);
+    //swd
+    virtual std::string ADDIN_API produce(tVariant* paParams);
 
     
 private:
