@@ -10,6 +10,8 @@
 #include <sys/time.h>
 #include <locale.h>
 #include <string>
+#include <iostream>
+#include <codecvt>
 #endif
 
 #include <librdkafka/rdkafkacpp.h>
