@@ -368,14 +368,6 @@ bool CKAFKA::GetParamDefValue(const long lMethodNum, const long lParamNum,
 		return true;
 	case eProduce:
 		return true;
-	case eMethEnable:
-	case eMethDisable:
-	case eMethShowInStatusLine:
-	case eMethStartTimer:
-	case eMethStopTimer:
-	case eMethShowMsgBox:
-		// There are no parameter values by default 
-		break;
 	default:
 		return false;
 	}
@@ -404,92 +396,8 @@ bool CKAFKA::CallAsProc(const long lMethodNum,
 {
 	switch (lMethodNum)
 	{
-	case eMethEnable:
-		m_boolEnabled = true;
-		break;
-	case eMethDisable:
-		m_boolEnabled = false;
-		break;
-	case eMethShowInStatusLine:
-		if (m_iConnect && lSizeArray)
-		{
-			tVariant* var = paParams;
-			m_iConnect->SetStatusLine(var->pwstrVal);
-		}
-		break;
-	case eMethStartTimer:
-		pAsyncEvent = m_iConnect;
-		/* The task of length of turn of messages
-		if (m_iConnect)
-			m_iConnect->SetEventBufferDepth(4000);
-		*/
-#if !defined( __linux__ ) && !defined(__APPLE__)
-		m_hTimerQueue = CreateTimerQueue();
-		CreateTimerQueueTimer(&m_hTimer, m_hTimerQueue,
-			(WAITORTIMERCALLBACK)MyTimerProc, 0, 1000, 1000, 0);
-#else
-		struct sigaction sa;
-		struct itimerval tv;
-		memset(&tv, 0, sizeof(tv));
-
-		sa.sa_handler = MyTimerProc;
-		sigemptyset(&sa.sa_mask);
-		sa.sa_flags = SA_RESTART;
-		sigaction(SIGALRM, &sa, NULL);
-		tv.it_interval.tv_sec = 1;
-		tv.it_value.tv_sec = 1;
-		setitimer(ITIMER_REAL, &tv, NULL);
-#endif
-		break;
-	case eMethStopTimer:
-#if !defined( __linux__ ) && !defined(__APPLE__)
-		if (m_hTimer != 0)
-		{
-			DeleteTimerQueue(m_hTimerQueue);
-			m_hTimerQueue = 0;
-			m_hTimer = 0;
-		}
-#else
-		alarm(0);
-#endif
-		m_uiTimer = 0;
-		pAsyncEvent = NULL;
-		break;
-	case eMethShowMsgBox:
-	{
-		if (eAppCapabilities1 <= g_capabilities)
-		{
-			IAddInDefBaseEx* cnn = (IAddInDefBaseEx*)m_iConnect;
-			IMsgBox* imsgbox = (IMsgBox*)cnn->GetInterface(eIMsgBox);
-			if (imsgbox)
-			{
-				IPlatformInfo* info = (IPlatformInfo*)cnn->GetInterface(eIPlatformInfo);
-				assert(info);
-				const IPlatformInfo::AppInfo* plt = info->GetPlatformInfo();
-				if (!plt)
-					break;
-				tVariant retVal;
-				tVarInit(&retVal);
-				if (imsgbox->Confirm(plt->AppVersion, &retVal))
-				{
-					bool succeed = TV_BOOL(&retVal);
-					WCHAR_T* result = 0;
-
-					if (succeed)
-						::convToShortWchar(&result, L"OK");
-					else
-						::convToShortWchar(&result, L"Cancel");
-
-					imsgbox->Alert(result);
-					delete[] result;
-
-				}
-			}
-		}
-	}
-	break;
-	default:
-		return false;
+		default:
+			return false;
 	}
 
 	return true;

@@ -21,13 +21,7 @@ public:
     {
         eGetInfo = 0,
         eProduce,
-        eMethEnable,
-        eMethDisable,
-        eMethShowInStatusLine,
-        eMethStartTimer,
-        eMethStopTimer,
-        eMethShowMsgBox,
-		eMethLast      // Always last
+        eMethLast      // Always last
     };
 
     CKAFKA(void);
