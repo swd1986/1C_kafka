@@ -438,7 +438,7 @@ bool CKAFKA::CallAsFunc(const long lMethodNum,
 
 	case eProduce:
 		TV_VT(pvarRetValue) = VTYPE_PSTR;
-		string_to_tVariant(VERSION_STRING, pvarRetValue);
+		string_to_tVariant(produce(paParams), pvarRetValue);
 		return true;
 
 	default:
