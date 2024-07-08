@@ -448,11 +448,8 @@ std::string CKAFKA::produce(tVariant* paParams)
 	// Cast uint16_t* to wchar_t*
 	wchar_t* p_brokers = reinterpret_cast<wchar_t*>(uint16_ptr);
 
-	rd_kafka_t *rk;		   /* Producer instance handle */
-	rd_kafka_conf_t *conf; /* Temporary configuration object */
-	char errstr[512];	   /* librdkafka API error reporting buffer */
-
-	conf = rd_kafka_conf_new();
+	rd_kafka_conf_t* conf = rd_kafka_conf_new();
+	rd_kafka_conf_destroy(conf);
 
 	#endif
 
