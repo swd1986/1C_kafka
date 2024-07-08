@@ -2,13 +2,15 @@ TARGET=1C_kafka.so
 
 SOURCES=1C_kafka.cpp \
 	dllmain.cpp \
-	stdafx.cpp 
+	stdafx.cpp \
+	librdkafka/rdkafkacpp.h
 
 LIBS=pthread
 
 OBJECTS=$(SOURCES:.cpp=.o)
 INCLUDES=-I../../include
 CXXLAGS=$(CXXFLAGS) $(INCLUDES) -m32 -finput-charset=WINDOWS-1251 -fPIC
+LDFLAGS = -lrdkafka++
 
 all: $(TARGET)
 

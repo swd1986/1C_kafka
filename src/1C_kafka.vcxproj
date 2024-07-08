@@ -225,6 +225,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="linux_build.sh" />
+    <None Include="Makefile" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
