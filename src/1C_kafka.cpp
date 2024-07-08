@@ -10,8 +10,6 @@
 #include <sys/time.h>
 #include <locale.h>
 #include <string>
-#include <iostream>
-#include <codecvt>
 #endif
 
 #include <librdkafka/rdkafkacpp.h>
@@ -21,8 +19,7 @@
 #include <string>
 #include <locale.h>
 #include "version.h"
-#include <iostream>
-#include <codecvt>
+
 
 
 #define TIME_LEN 65
@@ -409,8 +406,22 @@ bool CKAFKA::CallAsProc(const long lMethodNum,
 //---------------------------------------------------------------------------//
 // swd Helper function to convert wchar_t* to std::string
 std::string CKAFKA::wstringToString(const wchar_t* wstr) {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
-	return converter.to_bytes(wstr);
+	if (wstr == nullptr)
+		return "";
+
+	// Determine the size needed for the conversion
+	std::size_t len = std::wcslen(wstr) + 1; // +1 for null terminator
+	char* buffer = new char[len];
+
+	// Convert wchar_t* to char*
+	std::wcstombs(buffer, wstr, len);
+
+	// Create std::string from char*
+	std::string result(buffer);
+
+	delete[] buffer; // Clean up allocated memory
+
+	return result;
 }
 //---------------------------------------------------------------------------//
 bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
