@@ -12,12 +12,14 @@
 #include <string>
 #endif
 
+#include <librdkafka/rdkafkacpp.h>
 #include <stdio.h>
 #include <wchar.h>
 #include "1C_kafka.h"
 #include <string>
 #include <locale.h>
 #include "version.h"
+
 
 #define TIME_LEN 65
 

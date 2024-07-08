@@ -225,8 +225,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="linux_build.sh" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\librdkafka.redist.2.4.0\build\native\librdkafka.redist.targets" Condition="Exists('packages\librdkafka.redist.2.4.0\build\native\librdkafka.redist.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\librdkafka.redist.2.4.0\build\native\librdkafka.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\librdkafka.redist.2.4.0\build\native\librdkafka.redist.targets'))" />
+  </Target>
 </Project>
