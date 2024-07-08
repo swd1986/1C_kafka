@@ -450,12 +450,16 @@ std::string CKAFKA::produce(tVariant* paParams)
 	//brokers
 	#ifdef __linux__
 	try {
-	uint16_t* uint16_ptr = (paParams)->pwstrVal;
-	// Cast uint16_t* to wchar_t*
-	wchar_t* p_brokers = reinterpret_cast<wchar_t*>(uint16_ptr);
+		uint16_t* uint16_ptr = (paParams)->pwstrVal;
+		// Cast uint16_t* to wchar_t*
+		wchar_t* p_brokers = reinterpret_cast<wchar_t*>(uint16_ptr);
 
-	rd_kafka_conf_t* conf = rd_kafka_conf_new();
-	rd_kafka_conf_destroy(conf);
+		RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
+		RdKafka::Conf* tconf = RdKafka::Conf::create(RdKafka::Conf::CONF_TOPIC);
+
+		delete conf;
+		delete tconf;
+	
 	}
 	catch (const std::runtime_error& e) {
 		// Handle the exception
