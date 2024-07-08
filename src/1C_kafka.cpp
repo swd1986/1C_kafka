@@ -4,6 +4,9 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <iostream>
+#include <csignal>
+#include <cstring>
 #include <time.h>
 #include <errno.h>
 #include <iconv.h>
