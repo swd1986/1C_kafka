@@ -444,7 +444,11 @@ bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 std::string CKAFKA::produce(tVariant* paParams)
 {
 	//brokers
-	wchar_t* p_brokers = (paParams)->pwstrVal;
+	#ifdef __linux__
+	uint16_t* uint16_ptr = (paParams)->pwstrVal;
+	// Cast uint16_t* to wchar_t*
+	wchar_t* p_brokers = reinterpret_cast<wchar_t*>(uint16_ptr);
+	#endif
 
 	return "готово";
 }
