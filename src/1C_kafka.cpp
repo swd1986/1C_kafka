@@ -422,7 +422,10 @@ bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 //---------------------------------------------------------------------------//
 std::string CKAFKA::produce(tVariant* paParams)
 {
-	return "Привет";
+	//brokers
+	std::string p_brokers = (paParams)->pstrVal;
+
+	return p_brokers;
 }
 
 //---------------------------------------------------------------------------//
