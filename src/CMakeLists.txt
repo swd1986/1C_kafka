@@ -38,6 +38,7 @@ if(APPLE)
     SET(MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME}")
     SET(MACOSX_BUNDLE_COPYRIGHT "Copyright 2018 MyCompany.")
     TARGET_LINK_LIBRARIES(${BNDL} "-framework CoreFoundation")
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} -lrdkafka)
     #set_target_properties(${BNDL} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in)
 endif()
 
