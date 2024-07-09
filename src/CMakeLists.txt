@@ -1,8 +1,11 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+# Cmake script for project AddInNative
+# autor: 1C
 
-project(1C_kafka)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0 FATAL_ERROR)
 
-set(1C_kafka_SRC 
+PROJECT(1C_kafka)
+
+SET(1C_kafka_SRC 
     1C_kafka.cpp
     1C_kafka.h
     dllmain.cpp
@@ -12,45 +15,35 @@ set(1C_kafka_SRC
 
 include_directories(${CMAKE_SOURCE_DIR}/../include)
 
+SET (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR})
 if (UNIX)
     set_source_files_properties(${1C_kafka_SRC}
                               PROPERTIES COMPILE_FLAGS
                               "-fPIC ")
     if (APPLE)
-        add_definitions(-D__APPLE__)
+        ADD_DEFINITIONS(-D__APPLE__ )
     endif()
 else()
-    set(AddInDef_SRC 1C_kafka.def)
-    set(CMAKE_LINK_DEF_FILE_FLAG 1C_kafka.def)
-    add_definitions(-DUNICODE -DWIN32)
-    
-    # Linking against librdkafka and librdkafka++
-    #find_library(RDKAFKA_LIBRARY NAMES rdkafka PATH_SUFFIXES lib)
-    #find_library(RDKAFKAPP_LIBRARY NAMES rdkafka++)
-    
-    #if (NOT RDKAFKA_LIBRARY)
-    #    message(FATAL_ERROR "librdkafka library not found")
-    #endif ()
-    
-    #if (NOT RDKAFKAPP_LIBRARY)
-    #    message(FATAL_ERROR "librdkafka++ library not found")
-    #endif ()
-    
-    add_library(${PROJECT_NAME} SHARED ${1C_kafka_SRC} ${AddInDef_SRC})
-    target_link_libraries(${PROJECT_NAME} ${RDKAFKAPP_LIBRARY} ${RDKAFKA_LIBRARY})
+    SET(AddInDef_SRC 1C_kafka.def)
+    SET(CMAKE_LINK_DEF_FILE_FLAG 1C_kafka.def)
+    add_definitions(-DUNICODE -DWIN32 )
+endif()
+if(APPLE)
+    set(BNDL ${PROJECT_NAME}Bndl)
+
+    add_library(${BNDL} MODULE ${1C_kafka_SRC} ${AddInDef_SRC})
+
+    set_target_properties(${BNDL} PROPERTIES BUNDLE TRUE)
+    set_target_properties( ${BNDL} PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+    SET(MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME}")
+    SET(MACOSX_BUNDLE_COPYRIGHT "Copyright 2018 MyCompany.")
+    TARGET_LINK_LIBRARIES(${BNDL} "-framework CoreFoundation")
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} -lrdkafka)
+    #set_target_properties(${BNDL} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in)
 endif()
 
-# Linux-specific configurations
-if (UNIX AND NOT APPLE)
-    # Linking against librdkafka and librdkafka++
-    # find_package(PkgConfig REQUIRED)
-    # pkg_search_module(RDKAFKA REQUIRED librdkafka)
-    
-    add_library(${PROJECT_NAME} SHARED ${1C_kafka_SRC} ${AddInDef_SRC})
-    target_link_libraries(${PROJECT_NAME} ${RDKAFKA_LIBRARIES})
-endif()
+add_library(${PROJECT_NAME} SHARED ${1C_kafka_SRC} ${AddInDef_SRC})
 
-# General configuration
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties( ${PROJECT_NAME} PROPERTIES
    OUTPUT_NAME ${PROJECT_NAME}${MySuffix1}${MySuffix2} 
-)
+   )
