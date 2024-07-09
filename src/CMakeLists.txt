@@ -25,16 +25,16 @@ else()
     add_definitions(-DUNICODE -DWIN32)
     
     # Linking against librdkafka and librdkafka++
-    find_library(RDKAFKA_LIBRARY NAMES rdkafka PATH_SUFFIXES lib)
-    find_library(RDKAFKAPP_LIBRARY NAMES rdkafka++)
+    #find_library(RDKAFKA_LIBRARY NAMES rdkafka PATH_SUFFIXES lib)
+    #find_library(RDKAFKAPP_LIBRARY NAMES rdkafka++)
     
-    if (NOT RDKAFKA_LIBRARY)
-        message(FATAL_ERROR "librdkafka library not found")
-    endif ()
+    #if (NOT RDKAFKA_LIBRARY)
+    #    message(FATAL_ERROR "librdkafka library not found")
+    #endif ()
     
-    if (NOT RDKAFKAPP_LIBRARY)
-        message(FATAL_ERROR "librdkafka++ library not found")
-    endif ()
+    #if (NOT RDKAFKAPP_LIBRARY)
+    #    message(FATAL_ERROR "librdkafka++ library not found")
+    #endif ()
     
     add_library(${PROJECT_NAME} SHARED ${1C_kafka_SRC} ${AddInDef_SRC})
     target_link_libraries(${PROJECT_NAME} ${RDKAFKAPP_LIBRARY} ${RDKAFKA_LIBRARY})
@@ -43,8 +43,8 @@ endif()
 # Linux-specific configurations
 if (UNIX AND NOT APPLE)
     # Linking against librdkafka and librdkafka++
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(RDKAFKA REQUIRED librdkafka)
+    # find_package(PkgConfig REQUIRED)
+    # pkg_search_module(RDKAFKA REQUIRED librdkafka)
     
     add_library(${PROJECT_NAME} SHARED ${1C_kafka_SRC} ${AddInDef_SRC})
     target_link_libraries(${PROJECT_NAME} ${RDKAFKA_LIBRARIES})
