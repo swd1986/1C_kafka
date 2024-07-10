@@ -16,6 +16,12 @@ SET(1C_kafka_SRC
 include_directories(${CMAKE_SOURCE_DIR}/../include)
 
 SET (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR})
+
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(RDKAFKA REQUIRED rdkafka++)
+	include_directories(${RDKAFKA_INCLUDE_DIRS})
+	link_directories(${RDKAFKA_LIBRARY_DIRS})
+
 if (UNIX)
     set_source_files_properties(${1C_kafka_SRC}
                               PROPERTIES COMPILE_FLAGS
@@ -38,12 +44,12 @@ if(APPLE)
     SET(MACOSX_BUNDLE_INFO_STRING "${PROJECT_NAME}")
     SET(MACOSX_BUNDLE_COPYRIGHT "Copyright 2018 MyCompany.")
     TARGET_LINK_LIBRARIES(${BNDL} "-framework CoreFoundation")
-	TARGET_LINK_LIBRARIES(${PROJECT_NAME} -lrdkafka)
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} --lrdkafka++)
     #set_target_properties(${BNDL} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in)
 endif()
 
 add_library(${PROJECT_NAME} SHARED ${1C_kafka_SRC} ${AddInDef_SRC})
-
 set_target_properties( ${PROJECT_NAME} PROPERTIES
    OUTPUT_NAME ${PROJECT_NAME}${MySuffix1}${MySuffix2} 
    )
+target_link_libraries(${PROJECT_NAME} ${RDKAFKA_LIBRARIES})

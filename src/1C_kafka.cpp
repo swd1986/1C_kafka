@@ -454,10 +454,10 @@ std::string CKAFKA::produce(tVariant* paParams)
 		// Cast uint16_t* to wchar_t*
 		wchar_t* p_brokers = reinterpret_cast<wchar_t*>(uint16_ptr);
 
-		//RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
+		RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
 		//RdKafka::Conf* tconf = RdKafka::Conf::create(RdKafka::Conf::CONF_TOPIC);
 
-		//delete conf;
+		delete conf;
 		//delete tconf;
 	
 	}
