@@ -5,7 +5,7 @@
 // Version numbers
 #define VERSION_MAJOR 1
 #define VERSION_MINOR 1
-#define VERSION_PATCH 2
+#define VERSION_PATCH 3
 
 // Helper macros to convert numbers to strings
 #define STRINGIFY(x) #x

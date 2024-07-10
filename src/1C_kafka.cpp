@@ -77,6 +77,12 @@ static const wchar_t* g_MethodNamesRu[] = {
 static const wchar_t g_kClassNames[] = L"CKAFKA"; //"|OtherClass1|OtherClass2";
 static IAddInDefBase* pAsyncEvent = NULL;
 
+static volatile sig_atomic_t run = 1;
+
+static void sigterm(int sig) {
+	run = 0;
+}
+
 uint32_t convToShortWchar(WCHAR_T** Dest, const wchar_t* Source, uint32_t len = 0);
 uint32_t convFromShortWchar(wchar_t** Dest, const WCHAR_T* Source, uint32_t len = 0);
 uint32_t getLenShortWcharStr(const WCHAR_T* Source);
@@ -459,6 +465,30 @@ bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 
 	return true;
 }
+
+class ExampleEventCb : public RdKafka::EventCb {
+public:
+	void event_cb(RdKafka::Event& event) override {
+		switch (event.type()) {
+		case RdKafka::Event::EVENT_ERROR:
+			//std::cerr << "ERROR (" << RdKafka::err2str(event.err()) << "): " << event.str() << std::endl;
+			if (event.err() == RdKafka::ERR__ALL_BROKERS_DOWN) {
+				//std::cerr << "All brokers are down!" << std::endl;
+			}
+			break;
+		case RdKafka::Event::EVENT_STATS:
+			//std::cerr << "STATS: " << event.str() << std::endl;
+			break;
+		case RdKafka::Event::EVENT_LOG:
+			//std::cerr << "LOG-" << event.severity() << "-" << event.fac() << ": " << event.str() << std::endl;
+			break;
+		default:
+			//std::cerr << "EVENT " << event.type() << " (" << RdKafka::err2str(event.err()) << "): " << event.str() << std::endl;
+			break;
+		}
+	}
+};
+
 //---------------------------------------------------------------------------//
 std::string CKAFKA::produce(tVariant* paParams)
 {
@@ -476,6 +506,12 @@ std::string CKAFKA::produce(tVariant* paParams)
 		RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
 		
 		std::string errstr;
+		ExampleEventCb ex_event_cb;
+
+		if (conf->set("event_cb", &ex_event_cb, errstr) != RdKafka::Conf::CONF_OK) {
+			delete conf;
+			return errstr;
+		}
 
 		if (conf->set("bootstrap.servers", p_brokers, errstr) != RdKafka::Conf::CONF_OK) {
 			delete conf;
@@ -502,25 +538,62 @@ std::string CKAFKA::produce(tVariant* paParams)
 			return errstr;
 		}
 
+		signal(SIGINT, sigterm);
+		signal(SIGTERM, sigterm);
+
 		RdKafka::Producer* producer = RdKafka::Producer::create(conf, errstr);
 		if (!producer) {
 			delete conf;
 			return "Failed to create producer: " + errstr;
 		}
 
-		delete conf;
-		return p_topic;
+		RdKafka::ErrorCode err = producer->produce(
+			/* Topic name */
+			p_topic,
+			/* Any Partition: the builtin partitioner will be
+			 * used to assign the message to a topic based
+			 * on the message key, or random partition if
+			 * the key is not set. */
+			RdKafka::Topic::PARTITION_UA,
+			/* Make a copy of the value */
+			RdKafka::Producer::RK_MSG_COPY /* Copy payload */,
+			/* Value */
+			const_cast<char*>(p_message.c_str()), p_message.size(),
+			/* Key */
+			const_cast<char*>(p_key.c_str()), p_key.size(),
+			/* Timestamp (defaults to current time) */
+			0,
+			/* Message headers, if any */
+			NULL,
+			/* Per-message opaque value passed to
+			 * delivery report */
+			NULL);
+
+		producer->poll(1000);
+
+		if (err != RdKafka::ERR_NO_ERROR) {
+			return "Failed to produce to topic " + p_topic + ": " + RdKafka::err2str(err);
+		}
+
+		// Wait for all messages to be delivered with the specified timeout
+		err = producer->flush(1000);
+
+		if (err != RdKafka::ERR_NO_ERROR) {
+			return "Message delivery failed within the timeout period: " + RdKafka::err2str(err);
+		}
+
+		return "Message produced and delivered successfully";
 	
 	}
-	catch (const std::runtime_error& e) {
-		// Handle the exception
-		return e.what();
-	}
-	catch (...) {
-		// Catch any other exceptions
-		return "Caught an unknown exception";
-	}
-	return "готово";
+
+	catch (const std::exception& ex) {
+		// Handle standard exceptions
+		return "Exception: " + std::string(ex.what());
+}
+catch (...) {
+		// Handle any other type of exceptions
+		return "Unknown exception occurred";
+}
 	//#endif
 }
 
