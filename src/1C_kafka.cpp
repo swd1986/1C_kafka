@@ -14,10 +14,10 @@
 #include <locale.h>
 #include <string>
 #include <stdexcept>
-#include <librdkafka/rdkafka.h>
+//#include <librdkafka/rdkafka.h>
 #endif
 
-#include <librdkafka/rdkafkacpp.h>
+//#include <librdkafka/rdkafkacpp.h>
 #include <stdio.h>
 #include <wchar.h>
 #include "1C_kafka.h"
