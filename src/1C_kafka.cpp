@@ -15,6 +15,8 @@
 #include <string>
 #include <stdexcept>
 #include <librdkafka/rdkafkacpp.h>
+#include <codecvt>
+#include <locale>
 #endif
 
 #include <librdkafka/rdkafkacpp.h>
@@ -25,6 +27,8 @@
 #include <locale.h>
 #include "version.h"
 #include <stdexcept>
+#include <codecvt>
+#include <locale>
 
 #define TIME_LEN 65
 
@@ -408,6 +412,17 @@ bool CKAFKA::CallAsProc(const long lMethodNum,
 	return true;
 }
 //---------------------------------------------------------------------------//
+std::string uint16ToString(const uint16_t* text, size_t length) {
+	// Create a wstring from the uint16_t array
+	std::wstring wstr(text, text + length);
+
+	// Create a converter from UTF-16 to UTF-8
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+	// Convert the wstring to a UTF-8 string
+	return converter.to_bytes(wstr);
+}
+//---------------------------------------------------------------------------//
 // swd Helper function to convert wchar_t* to std::string
 std::string CKAFKA::wstringToString(const wchar_t* wstr) {
 	if (wstr == nullptr)
@@ -448,17 +463,23 @@ bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 std::string CKAFKA::produce(tVariant* paParams)
 {
 	//brokers
-	#ifdef __linux__
+	//#ifdef __linux__
 	try {
 		uint16_t* uint16_ptr = (paParams)->pwstrVal;
 		// Cast uint16_t* to wchar_t*
-		wchar_t* p_brokers = reinterpret_cast<wchar_t*>(uint16_ptr);
+		std::string p_brokers = uint16ToString(uint16_ptr, (paParams)->strLen);
 
 		RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
-		//RdKafka::Conf* tconf = RdKafka::Conf::create(RdKafka::Conf::CONF_TOPIC);
+		
+		std::string errstr;
 
-		delete conf;
-		//delete tconf;
+		if (conf->set("bootstrap.servers", p_brokers, errstr) !=
+			RdKafka::Conf::CONF_OK) {
+			return errstr;
+		}
+
+		//delete conf;
+		return p_brokers;
 	
 	}
 	catch (const std::runtime_error& e) {
@@ -470,9 +491,7 @@ std::string CKAFKA::produce(tVariant* paParams)
 		return "Caught an unknown exception";
 	}
 	return "готово";
-	#endif
-
-	return "готово";
+	//#endif
 }
 
 //---------------------------------------------------------------------------//
