@@ -465,21 +465,51 @@ std::string CKAFKA::produce(tVariant* paParams)
 	//brokers
 	//#ifdef __linux__
 	try {
-		uint16_t* uint16_ptr = (paParams)->pwstrVal;
 		// Cast uint16_t* to wchar_t*
-		std::string p_brokers = uint16ToString(uint16_ptr, (paParams)->strLen);
+		std::string p_brokers	= uint16ToString((paParams)->pwstrVal, (paParams)->strLen);
+		std::string p_topic		= uint16ToString((paParams + 1)->pwstrVal, (paParams + 1)->strLen);
+		std::string p_username	= uint16ToString((paParams + 2)->pwstrVal, (paParams + 2)->strLen);
+		std::string p_password	= uint16ToString((paParams + 3)->pwstrVal, (paParams + 3)->strLen);
+		std::string p_key		= uint16ToString((paParams + 4)->pwstrVal, (paParams + 4)->strLen);
+		std::string p_message	= uint16ToString((paParams + 5)->pwstrVal, (paParams + 5)->strLen);
 
 		RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
 		
 		std::string errstr;
 
-		if (conf->set("bootstrap.servers", p_brokers, errstr) !=
-			RdKafka::Conf::CONF_OK) {
+		if (conf->set("bootstrap.servers", p_brokers, errstr) != RdKafka::Conf::CONF_OK) {
+			delete conf;
 			return errstr;
 		}
 
-		//delete conf;
-		return p_brokers;
+		if (conf->set("security.protocol", "SASL_PLAINTEXT", errstr) != RdKafka::Conf::CONF_OK) {
+			delete conf;
+			return errstr;
+		}
+
+		if (conf->set("sasl.mechanism", "PLAIN", errstr) != RdKafka::Conf::CONF_OK) {
+			delete conf;
+			return errstr;
+		}
+
+		if (conf->set("sasl.username", p_username, errstr) != RdKafka::Conf::CONF_OK) {
+			delete conf;
+			return errstr;
+		}
+
+		if (conf->set("sasl.password", p_password, errstr) != RdKafka::Conf::CONF_OK) {
+			delete conf;
+			return errstr;
+		}
+
+		RdKafka::Producer* producer = RdKafka::Producer::create(conf, errstr);
+		if (!producer) {
+			delete conf;
+			return "Failed to create producer: " + errstr;
+		}
+
+		delete conf;
+		return p_topic;
 	
 	}
 	catch (const std::runtime_error& e) {
