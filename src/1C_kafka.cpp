@@ -14,10 +14,10 @@
 #include <locale.h>
 #include <string>
 #include <stdexcept>
-//#include <librdkafka/rdkafka.h>
+#include <librdkafka/rdkafkacpp.h>
 #endif
 
-//#include <librdkafka/rdkafkacpp.h>
+#include <librdkafka/rdkafkacpp.h>
 #include <stdio.h>
 #include <wchar.h>
 #include "1C_kafka.h"
@@ -469,6 +469,7 @@ std::string CKAFKA::produce(tVariant* paParams)
 		// Catch any other exceptions
 		return "Caught an unknown exception";
 	}
+	return "готово";
 	#endif
 
 	return "готово";
