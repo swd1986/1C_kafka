@@ -8,7 +8,10 @@ LIBS=pthread
 
 OBJECTS=$(SOURCES:.cpp=.o)
 INCLUDES=-I../../include
-CXXLAGS=$(CXXFLAGS) $(INCLUDES) -m32 -finput-charset=WINDOWS-1251 -fPIC
+#debug
+#CXXLAGS=$(CXXFLAGS) $(INCLUDES) -m32 -finput-charset=WINDOWS-1251 -fPIC
+#release
+CXXFLAGS=$(CXXFLAGS) $(INCLUDES) -m32 -finput-charset=WINDOWS-1251 -fPIC -O3 -Wall
 
 all: $(TARGET)
 
@@ -23,8 +26,14 @@ all: $(TARGET)
 	  sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
 	@rm -f $*.d.tmp
 
-$(TARGET): $(OBJECTS) Makefile
-	g++ $(CXXLAGS) -shared $(OBJECTS) -o $(TARGET) $(addprefix -l, $(LIBS))
+	#debug
+	#$(TARGET): $(OBJECTS) Makefile
+	#g++ $(CXXLAGS) -shared $(OBJECTS) -o $(TARGET) $(addprefix -l, $(LIBS))
+
+	#release
+	$(TARGET): $(OBJECTS) Makefile
+	g++ $(CXXFLAGS) -shared $(OBJECTS) -o $(TARGET) $(addprefix -l, $(LIBS))
+	strip --strip-unneeded $(TARGET)
 
 clean:
 	-rm $(TARGET) *.o *.d
