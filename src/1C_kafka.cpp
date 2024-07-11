@@ -569,20 +569,20 @@ std::string CKAFKA::produce(tVariant* paParams)
 			 * delivery report */
 			NULL);
 
-		producer->poll(1000);
+		producer->poll(500);
 
 		if (err != RdKafka::ERR_NO_ERROR) {
 			return "Failed to produce to topic " + p_topic + ": " + RdKafka::err2str(err);
 		}
 
 		// Wait for all messages to be delivered with the specified timeout
-		err = producer->flush(1000);
+		err = producer->flush(500);
 
 		if (err != RdKafka::ERR_NO_ERROR) {
 			return "Message delivery failed within the timeout period: " + RdKafka::err2str(err);
 		}
 
-		return "Message produced and delivered successfully";
+		return "Persisted";
 	
 	}
 
