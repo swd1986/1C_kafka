@@ -589,11 +589,11 @@ std::string CKAFKA::produce(tVariant* paParams)
 	catch (const std::exception& ex) {
 		// Handle standard exceptions
 		return "Exception: " + std::string(ex.what());
-}
-catch (...) {
+	}
+	catch (...) {
 		// Handle any other type of exceptions
 		return "Unknown exception occurred";
-}
+	}
 	//#endif
 }
 
