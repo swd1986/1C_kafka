@@ -592,8 +592,8 @@ bool CKAFKA::consume(tVariant* paParams)
 		rd_kafka_consumer_close(rk);
 		rd_kafka_destroy(rk);
 
-		g_message = (const char*)rkm->payload;
-		g_key = (const char*)rkm->key;
+		g_message = std::string((const char*)rkm->payload, rkm->len);
+		g_key = std::string((const char*)rkm->key, rkm->key_len);
 
 		return true;
 
