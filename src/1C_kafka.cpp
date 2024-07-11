@@ -52,26 +52,14 @@ static const wchar_t* g_PropNamesRu[] = {
 static const wchar_t* g_MethodNames[] = {
 	L"GetVersion",
 	L"SendProducer",
-	L"Disable",
-	L"ShowInStatusLine",
-	L"StartTimer",
-	L"StopTimer",
-	L"LoadPicture",
-	L"ShowMessageBox",
-	L"Loopback"
+	L"Consume"
 };
 
 //swd методы RU
 static const wchar_t* g_MethodNamesRu[] = {
 	L"ПолучитьВерсию",
 	L"SendProducer",
-	L"Выключить",
-	L"ПоказатьВСтрокеСтатуса",
-	L"СтартТаймер",
-	L"СтопТаймер",
-	L"ЗагрузитьКартинку",
-	L"ПоказатьСообщение",
-	L"Петля"
+	L"Consume"
 };
 
 static const wchar_t g_kClassNames[] = L"CKAFKA"; //"|OtherClass1|OtherClass2";
@@ -356,6 +344,7 @@ const WCHAR_T* CKAFKA::GetMethodName(const long lMethodNum, const long lMethodAl
 
 	return wsMethodName;
 }
+//swd
 //---------------------------------------------------------------------------//
 long CKAFKA::GetNParams(const long lMethodNum)
 {
@@ -365,6 +354,8 @@ long CKAFKA::GetNParams(const long lMethodNum)
 		return 0;
 	case eProduce:
 		return 6;
+	case eConsume:
+		return 0;
 	default:
 		return 0;
 	}
@@ -383,6 +374,8 @@ bool CKAFKA::GetParamDefValue(const long lMethodNum, const long lParamNum,
 		return true;
 	case eProduce:
 		return true;
+	case eConsume:
+		return true;
 	default:
 		return false;
 	}
@@ -398,6 +391,8 @@ bool CKAFKA::HasRetVal(const long lMethodNum)
 	case eGetInfo:
 		return true;
 	case eProduce:
+		return true;
+	case eConsume:
 		return true;
 	default:
 		return false;
@@ -488,8 +483,12 @@ public:
 		}
 	}
 };
-
-//---------------------------------------------------------------------------//
+//swd consume---------------------------------------------------------------//
+bool CKAFKA::consume(tVariant* paParams)
+{
+	return false;
+}
+//swd produce--------------------------------------------------------------//
 std::string CKAFKA::produce(tVariant* paParams)
 {
 	//brokers
@@ -597,7 +596,7 @@ std::string CKAFKA::produce(tVariant* paParams)
 	//#endif
 }
 
-//---------------------------------------------------------------------------//
+//swd CallAsFunc-----------------------------------------------------------------------//
 bool CKAFKA::CallAsFunc(const long lMethodNum,
 	tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray)
 {
@@ -611,6 +610,11 @@ bool CKAFKA::CallAsFunc(const long lMethodNum,
 	case eProduce:
 		TV_VT(pvarRetValue) = VTYPE_PSTR;
 		string_to_tVariant(produce(paParams), pvarRetValue);
+		return true;
+
+	case eConsume:
+		TV_VT(pvarRetValue) = VTYPE_BOOL;
+		pvarRetValue->bVal = consume(paParams);
 		return true;
 
 	default:

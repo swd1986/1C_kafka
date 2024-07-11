@@ -21,6 +21,7 @@ public:
     {
         eGetInfo = 0,
         eProduce,
+        eConsume,
         eMethLast      // Always last
     };
 
@@ -56,7 +57,8 @@ public:
                 tVariant* pvarRetValue, tVariant* paParams, const long lSizeArray);
     // LocaleBase
     virtual void ADDIN_API SetLocale(const WCHAR_T* loc);
-    //swd
+    //swd header
+    virtual bool ADDIN_API consume(tVariant* paParams);
     virtual std::string ADDIN_API produce(tVariant* paParams);
     virtual std::string ADDIN_API wstringToString(const wchar_t* wstr);
     
