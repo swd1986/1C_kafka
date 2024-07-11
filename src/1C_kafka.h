@@ -12,8 +12,8 @@ class CKAFKA : public IComponentBase
 public:
     enum Props
     {
-        ePropIsEnabled = 0,
-        ePropIsTimerPresent,
+        e_message = 0,
+        e_key,
         ePropLast      // Always last
     };
 

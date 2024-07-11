@@ -14,12 +14,12 @@
 #include <locale.h>
 #include <string>
 #include <stdexcept>
-#include <librdkafka/rdkafkacpp.h>
+#include <librdkafka/rdkafka.h>
 #include <codecvt>
 #include <locale>
 #endif
 
-#include <librdkafka/rdkafkacpp.h>
+#include <librdkafka/rdkafka.h>
 #include <stdio.h>
 #include <wchar.h>
 #include "1C_kafka.h"
@@ -39,37 +39,59 @@
 #endif
 
 static const wchar_t* g_PropNames[] = {
-	L"IsEnabled",
-	L"IsTimerPresent"
+	L"Message",
+	L"Key"
 };
 
 static const wchar_t* g_PropNamesRu[] = {
-	L"Включен",
-	L"ЕстьТаймер"
+	L"Message",
+	L"Key"
 };
 
 //swd методы EN
 static const wchar_t* g_MethodNames[] = {
 	L"GetVersion",
 	L"SendProducer",
-	L"Consume"
+	L"Consume",
+	L""
 };
 
 //swd методы RU
 static const wchar_t* g_MethodNamesRu[] = {
 	L"ПолучитьВерсию",
 	L"SendProducer",
-	L"Consume"
+	L"Consume",
+	L""
 };
 
 static const wchar_t g_kClassNames[] = L"CKAFKA"; //"|OtherClass1|OtherClass2";
 static IAddInDefBase* pAsyncEvent = NULL;
 
+//swd INIT KAFKA-------------------------------------------------------------//
 static volatile sig_atomic_t run = 1;
-
 static void sigterm(int sig) {
 	run = 0;
 }
+static void stop(int sig)
+{
+	run = 0;
+	fclose(stdin); /* abort fgets() */
+}
+static void
+dr_msg_cb(rd_kafka_t* rk, const rd_kafka_message_t* rkmessage, void* opaque)
+{
+	// if (rkmessage->err)
+	// fprintf(stderr, "%% Message delivery failed: %s\n",
+	//		rd_kafka_err2str(rkmessage->err));
+	// else
+	// fprintf(stderr,
+	//		"%% Message delivered (%zd bytes, "
+	//		"partition %" PRId32 ")\n",
+	//		rkmessage->len, rkmessage->partition);
+}
+std::string g_key = "";
+std::string g_message = "";
+
 
 uint32_t convToShortWchar(WCHAR_T** Dest, const wchar_t* Source, uint32_t len = 0);
 uint32_t convFromShortWchar(wchar_t** Dest, const WCHAR_T* Source, uint32_t len = 0);
@@ -225,18 +247,18 @@ const WCHAR_T* CKAFKA::GetPropName(long lPropNum, long lPropAlias)
 
 	return wsPropName;
 }
-//---------------------------------------------------------------------------//
+//swd GetPropVal--------------------------------------------------------------------//
 bool CKAFKA::GetPropVal(const long lPropNum, tVariant* pvarPropVal)
 {
 	switch (lPropNum)
 	{
-	case ePropIsEnabled:
-		TV_VT(pvarPropVal) = VTYPE_BOOL;
-		TV_BOOL(pvarPropVal) = m_boolEnabled;
+	case e_message:
+		TV_VT(pvarPropVal) = VTYPE_PSTR;
+		string_to_tVariant(g_message, pvarPropVal);
 		break;
-	case ePropIsTimerPresent:
-		TV_VT(pvarPropVal) = VTYPE_BOOL;
-		TV_BOOL(pvarPropVal) = true;
+	case e_key:
+		TV_VT(pvarPropVal) = VTYPE_PSTR;
+		string_to_tVariant(g_key, pvarPropVal);
 		break;
 	default:
 		return false;
@@ -249,12 +271,12 @@ bool CKAFKA::SetPropVal(const long lPropNum, tVariant* varPropVal)
 {
 	switch (lPropNum)
 	{
-	case ePropIsEnabled:
-		if (TV_VT(varPropVal) != VTYPE_BOOL)
-			return false;
-		m_boolEnabled = TV_BOOL(varPropVal);
+	case e_message:
+		return false;
 		break;
-	case ePropIsTimerPresent:
+	case e_key:
+		return false;
+		break;
 	default:
 		return false;
 	}
@@ -266,8 +288,9 @@ bool CKAFKA::IsPropReadable(const long lPropNum)
 {
 	switch (lPropNum)
 	{
-	case ePropIsEnabled:
-	case ePropIsTimerPresent:
+	case e_message:
+		return true;
+	case e_key:
 		return true;
 	default:
 		return false;
@@ -280,9 +303,9 @@ bool CKAFKA::IsPropWritable(const long lPropNum)
 {
 	switch (lPropNum)
 	{
-	case ePropIsEnabled:
-		return true;
-	case ePropIsTimerPresent:
+	case e_message:
+		return false;
+	case e_key:
 		return false;
 	default:
 		return false;
@@ -344,8 +367,7 @@ const WCHAR_T* CKAFKA::GetMethodName(const long lMethodNum, const long lMethodAl
 
 	return wsMethodName;
 }
-//swd
-//---------------------------------------------------------------------------//
+//swd Параметры-----------------------------------------------------------//
 long CKAFKA::GetNParams(const long lMethodNum)
 {
 	switch (lMethodNum)
@@ -355,7 +377,7 @@ long CKAFKA::GetNParams(const long lMethodNum)
 	case eProduce:
 		return 6;
 	case eConsume:
-		return 0;
+		return 5;
 	default:
 		return 0;
 	}
@@ -406,8 +428,8 @@ bool CKAFKA::CallAsProc(const long lMethodNum,
 {
 	switch (lMethodNum)
 	{
-		default:
-			return false;
+	default:
+		return false;
 	}
 
 	return true;
@@ -461,32 +483,125 @@ bool CKAFKA::string_to_tVariant(const std::string& str, tVariant* val) {
 	return true;
 }
 
-class ExampleEventCb : public RdKafka::EventCb {
-public:
-	void event_cb(RdKafka::Event& event) override {
-		switch (event.type()) {
-		case RdKafka::Event::EVENT_ERROR:
-			//std::cerr << "ERROR (" << RdKafka::err2str(event.err()) << "): " << event.str() << std::endl;
-			if (event.err() == RdKafka::ERR__ALL_BROKERS_DOWN) {
-				//std::cerr << "All brokers are down!" << std::endl;
-			}
-			break;
-		case RdKafka::Event::EVENT_STATS:
-			//std::cerr << "STATS: " << event.str() << std::endl;
-			break;
-		case RdKafka::Event::EVENT_LOG:
-			//std::cerr << "LOG-" << event.severity() << "-" << event.fac() << ": " << event.str() << std::endl;
-			break;
-		default:
-			//std::cerr << "EVENT " << event.type() << " (" << RdKafka::err2str(event.err()) << "): " << event.str() << std::endl;
-			break;
-		}
-	}
-};
 //swd consume---------------------------------------------------------------//
 bool CKAFKA::consume(tVariant* paParams)
 {
-	return false;
+
+	try {
+
+		g_message = "";
+		g_key = "";
+
+		std::string p_brokers = uint16ToString((paParams)->pwstrVal, (paParams)->strLen);
+		std::string p_topic = uint16ToString((paParams + 1)->pwstrVal, (paParams + 1)->strLen);
+		std::string p_group = uint16ToString((paParams + 2)->pwstrVal, (paParams + 2)->strLen);
+		std::string p_username = uint16ToString((paParams + 3)->pwstrVal, (paParams + 3)->strLen);
+		std::string p_password = uint16ToString((paParams + 4)->pwstrVal, (paParams + 4)->strLen);
+
+		rd_kafka_t* rk;
+		rd_kafka_conf_t* conf;
+		char errstr[512];
+
+		conf = rd_kafka_conf_new();
+
+		if (rd_kafka_conf_set(conf, "bootstrap.servers", p_brokers.c_str(), errstr,
+			sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("Error setting rebalance callback: ");
+		}
+
+		if (rd_kafka_conf_set(conf, "group.id", p_group.c_str(), errstr,
+			sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error group.id");
+		}
+
+		if (rd_kafka_conf_set(conf, "auto.offset.reset", "earliest", errstr,
+			sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error auto.offset.reset");
+		}
+
+		if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
+			errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error security.protocol");
+		}
+
+		if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
+			errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error sasl.mechanism");
+		}
+
+		if (rd_kafka_conf_set(conf, "sasl.username", p_username.c_str(),
+			errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error sasl.username");
+		}
+
+		if (rd_kafka_conf_set(conf, "sasl.password", p_password.c_str(),
+			errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error sasl.password");
+		}
+
+		rk = rd_kafka_new(RD_KAFKA_CONSUMER, conf, errstr, sizeof(errstr));
+		if (!rk)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error Failed to create new consumer");
+		}
+
+		conf = NULL;
+		rd_kafka_poll_set_consumer(rk);
+		rd_kafka_topic_partition_list_t *subscription;
+		subscription = rd_kafka_topic_partition_list_new(1);
+
+		rd_kafka_topic_partition_list_add(subscription,
+		 								  p_topic.c_str(),
+		 								  /* the partition is ignored
+		 								   * by subscribe() */
+		 								  RD_KAFKA_PARTITION_UA);
+		rd_kafka_resp_err_t err;
+		err = rd_kafka_subscribe(rk, subscription);
+		if (err)
+		{
+			rd_kafka_topic_partition_list_destroy(subscription);
+			rd_kafka_destroy(rk);
+			throw std::runtime_error("error Failed to subscribe to topic");
+		}
+
+		rd_kafka_message_t *rkm = rd_kafka_consumer_poll(rk, 5000);
+		if (!rkm)
+			return false; // timeout: no message
+
+		if (rkm->err)
+		{
+			rd_kafka_message_destroy(rkm);
+			throw std::runtime_error("Consumer error"); // timeout: no message
+		}
+		rd_kafka_message_destroy(rkm);
+		rd_kafka_consumer_close(rk);
+		rd_kafka_destroy(rk);
+
+		g_message = (const char *)rkm->payload;
+		g_key = (const char*)rkm->key;
+
+		return true;
+
+	}
+	catch (const std::exception& e) {
+		//std::cerr << "Exception caught: " << e.what() << std::endl;
+		return false;
+	}
 }
 //swd produce--------------------------------------------------------------//
 std::string CKAFKA::produce(tVariant* paParams)
@@ -495,94 +610,97 @@ std::string CKAFKA::produce(tVariant* paParams)
 	//#ifdef __linux__
 	try {
 		// Cast uint16_t* to wchar_t*
-		std::string p_brokers	= uint16ToString((paParams)->pwstrVal, (paParams)->strLen);
-		std::string p_topic		= uint16ToString((paParams + 1)->pwstrVal, (paParams + 1)->strLen);
-		std::string p_username	= uint16ToString((paParams + 2)->pwstrVal, (paParams + 2)->strLen);
-		std::string p_password	= uint16ToString((paParams + 3)->pwstrVal, (paParams + 3)->strLen);
-		std::string p_key		= uint16ToString((paParams + 4)->pwstrVal, (paParams + 4)->strLen);
-		std::string p_message	= uint16ToString((paParams + 5)->pwstrVal, (paParams + 5)->strLen);
+		std::string p_brokers = uint16ToString((paParams)->pwstrVal, (paParams)->strLen);
+		std::string p_topic = uint16ToString((paParams + 1)->pwstrVal, (paParams + 1)->strLen);
+		std::string p_username = uint16ToString((paParams + 2)->pwstrVal, (paParams + 2)->strLen);
+		std::string p_password = uint16ToString((paParams + 3)->pwstrVal, (paParams + 3)->strLen);
+		std::string p_key = uint16ToString((paParams + 4)->pwstrVal, (paParams + 4)->strLen);
+		std::string p_message = uint16ToString((paParams + 5)->pwstrVal, (paParams + 5)->strLen);
 
-		RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
-		
-		std::string errstr;
-		ExampleEventCb ex_event_cb;
+		//RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
+		//
+		//std::string errstr;
+		//ExampleEventCb ex_event_cb;
 
-		if (conf->set("event_cb", &ex_event_cb, errstr) != RdKafka::Conf::CONF_OK) {
-			delete conf;
-			return errstr;
-		}
+		//if (conf->set("event_cb", &ex_event_cb, errstr) != RdKafka::Conf::CONF_OK) {
+		//	delete conf;
+		//	return errstr;
+		//}
 
-		if (conf->set("bootstrap.servers", p_brokers, errstr) != RdKafka::Conf::CONF_OK) {
-			delete conf;
-			return errstr;
-		}
+		//if (conf->set("bootstrap.servers", p_brokers, errstr) != RdKafka::Conf::CONF_OK) {
+		//	delete conf;
+		//	return errstr;
+		//}
 
-		if (conf->set("security.protocol", "SASL_PLAINTEXT", errstr) != RdKafka::Conf::CONF_OK) {
-			delete conf;
-			return errstr;
-		}
+		//if (conf->set("security.protocol", "SASL_PLAINTEXT", errstr) != RdKafka::Conf::CONF_OK) {
+		//	delete conf;
+		//	return errstr;
+		//}
 
-		if (conf->set("sasl.mechanism", "PLAIN", errstr) != RdKafka::Conf::CONF_OK) {
-			delete conf;
-			return errstr;
-		}
+		//if (conf->set("sasl.mechanism", "PLAIN", errstr) != RdKafka::Conf::CONF_OK) {
+		//	delete conf;
+		//	return errstr;
+		//}
 
-		if (conf->set("sasl.username", p_username, errstr) != RdKafka::Conf::CONF_OK) {
-			delete conf;
-			return errstr;
-		}
+		//if (conf->set("sasl.username", p_username, errstr) != RdKafka::Conf::CONF_OK) {
+		//	delete conf;
+		//	return errstr;
+		//}
 
-		if (conf->set("sasl.password", p_password, errstr) != RdKafka::Conf::CONF_OK) {
-			delete conf;
-			return errstr;
-		}
+		//if (conf->set("sasl.password", p_password, errstr) != RdKafka::Conf::CONF_OK) {
+		//	delete conf;
+		//	return errstr;
+		//}
 
-		signal(SIGINT, sigterm);
-		signal(SIGTERM, sigterm);
+		//signal(SIGINT, sigterm);
+		//signal(SIGTERM, sigterm);
 
-		RdKafka::Producer* producer = RdKafka::Producer::create(conf, errstr);
-		if (!producer) {
-			delete conf;
-			return "Failed to create producer: " + errstr;
-		}
+		//RdKafka::Producer* producer = RdKafka::Producer::create(conf, errstr);
+		//if (!producer) {
+		//	delete conf;
+		//	return "Failed to create producer: " + errstr;
+		//}
 
-		RdKafka::ErrorCode err = producer->produce(
-			/* Topic name */
-			p_topic,
-			/* Any Partition: the builtin partitioner will be
-			 * used to assign the message to a topic based
-			 * on the message key, or random partition if
-			 * the key is not set. */
-			RdKafka::Topic::PARTITION_UA,
-			/* Make a copy of the value */
-			RdKafka::Producer::RK_MSG_COPY /* Copy payload */,
-			/* Value */
-			const_cast<char*>(p_message.c_str()), p_message.size(),
-			/* Key */
-			const_cast<char*>(p_key.c_str()), p_key.size(),
-			/* Timestamp (defaults to current time) */
-			0,
-			/* Message headers, if any */
-			NULL,
-			/* Per-message opaque value passed to
-			 * delivery report */
-			NULL);
+		//RdKafka::ErrorCode err = producer->produce(
+		//	/* Topic name */
+		//	p_topic,
+		//	/* Any Partition: the builtin partitioner will be
+		//	 * used to assign the message to a topic based
+		//	 * on the message key, or random partition if
+		//	 * the key is not set. */
+		//	RdKafka::Topic::PARTITION_UA,
+		//	/* Make a copy of the value */
+		//	RdKafka::Producer::RK_MSG_COPY /* Copy payload */,
+		//	/* Value */
+		//	const_cast<char*>(p_message.c_str()), p_message.size(),
+		//	/* Key */
+		//	const_cast<char*>(p_key.c_str()), p_key.size(),
+		//	/* Timestamp (defaults to current time) */
+		//	0,
+		//	/* Message headers, if any */
+		//	NULL,
+		//	/* Per-message opaque value passed to
+		//	 * delivery report */
+		//	NULL);
 
-		producer->poll(500);
+		//producer->poll(500);
 
-		if (err != RdKafka::ERR_NO_ERROR) {
-			return "Failed to produce to topic " + p_topic + ": " + RdKafka::err2str(err);
-		}
+		//if (err != RdKafka::ERR_NO_ERROR) {
+		//	return "Failed to produce to topic " + p_topic + ": " + RdKafka::err2str(err);
+		//}
 
-		// Wait for all messages to be delivered with the specified timeout
-		err = producer->flush(500);
+		//// Wait for all messages to be delivered with the specified timeout
+		//err = producer->flush(500);
 
-		if (err != RdKafka::ERR_NO_ERROR) {
-			return "Message delivery failed within the timeout period: " + RdKafka::err2str(err);
-		}
+		//if (err != RdKafka::ERR_NO_ERROR) {
+		//	return "Message delivery failed within the timeout period: " + RdKafka::err2str(err);
+		//}
+
+		//delete conf;
+		//delete producer;
 
 		return "Persisted";
-	
+
 	}
 
 	catch (const std::exception& ex) {
