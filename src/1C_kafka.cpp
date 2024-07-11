@@ -562,14 +562,14 @@ bool CKAFKA::consume(tVariant* paParams)
 
 		conf = NULL;
 		rd_kafka_poll_set_consumer(rk);
-		rd_kafka_topic_partition_list_t *subscription;
+		rd_kafka_topic_partition_list_t* subscription;
 		subscription = rd_kafka_topic_partition_list_new(1);
 
 		rd_kafka_topic_partition_list_add(subscription,
-		 								  p_topic.c_str(),
-		 								  /* the partition is ignored
-		 								   * by subscribe() */
-		 								  RD_KAFKA_PARTITION_UA);
+			p_topic.c_str(),
+			/* the partition is ignored
+			 * by subscribe() */
+			RD_KAFKA_PARTITION_UA);
 		rd_kafka_resp_err_t err;
 		err = rd_kafka_subscribe(rk, subscription);
 		if (err)
@@ -579,7 +579,7 @@ bool CKAFKA::consume(tVariant* paParams)
 			throw std::runtime_error("error Failed to subscribe to topic");
 		}
 
-		rd_kafka_message_t *rkm = rd_kafka_consumer_poll(rk, 5000);
+		rd_kafka_message_t* rkm = rd_kafka_consumer_poll(rk, 5000);
 		if (!rkm)
 			return false; // timeout: no message
 
@@ -592,7 +592,7 @@ bool CKAFKA::consume(tVariant* paParams)
 		rd_kafka_consumer_close(rk);
 		rd_kafka_destroy(rk);
 
-		g_message = (const char *)rkm->payload;
+		g_message = (const char*)rkm->payload;
 		g_key = (const char*)rkm->key;
 
 		return true;
@@ -617,87 +617,85 @@ std::string CKAFKA::produce(tVariant* paParams)
 		std::string p_key = uint16ToString((paParams + 4)->pwstrVal, (paParams + 4)->strLen);
 		std::string p_message = uint16ToString((paParams + 5)->pwstrVal, (paParams + 5)->strLen);
 
-		//RdKafka::Conf* conf = RdKafka::Conf::create(RdKafka::Conf::CONF_GLOBAL);
-		//
-		//std::string errstr;
-		//ExampleEventCb ex_event_cb;
+		rd_kafka_t* rk;
+		rd_kafka_conf_t* conf;
+		char errstr[512];
 
-		//if (conf->set("event_cb", &ex_event_cb, errstr) != RdKafka::Conf::CONF_OK) {
-		//	delete conf;
-		//	return errstr;
-		//}
+		conf = rd_kafka_conf_new();
 
-		//if (conf->set("bootstrap.servers", p_brokers, errstr) != RdKafka::Conf::CONF_OK) {
-		//	delete conf;
-		//	return errstr;
-		//}
+		if (rd_kafka_conf_set(conf, "bootstrap.servers", p_brokers.c_str(), errstr,
+			sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error bootstrap.servers");
+		}
 
-		//if (conf->set("security.protocol", "SASL_PLAINTEXT", errstr) != RdKafka::Conf::CONF_OK) {
-		//	delete conf;
-		//	return errstr;
-		//}
+		if (rd_kafka_conf_set(conf, "security.protocol", "SASL_PLAINTEXT",
+			errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error security.protocol");
+		}
 
-		//if (conf->set("sasl.mechanism", "PLAIN", errstr) != RdKafka::Conf::CONF_OK) {
-		//	delete conf;
-		//	return errstr;
-		//}
+		if (rd_kafka_conf_set(conf, "sasl.mechanism", "PLAIN",
+			errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error sasl.mechanism");
+		}
 
-		//if (conf->set("sasl.username", p_username, errstr) != RdKafka::Conf::CONF_OK) {
-		//	delete conf;
-		//	return errstr;
-		//}
+		if (rd_kafka_conf_set(conf, "sasl.username", p_username.c_str(),
+			errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error sasl.username");
+		}
 
-		//if (conf->set("sasl.password", p_password, errstr) != RdKafka::Conf::CONF_OK) {
-		//	delete conf;
-		//	return errstr;
-		//}
+		if (rd_kafka_conf_set(conf, "sasl.password", p_password.c_str(),
+			errstr, sizeof(errstr)) != RD_KAFKA_CONF_OK)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error sasl.password");
+		}
 
-		//signal(SIGINT, sigterm);
-		//signal(SIGTERM, sigterm);
+		rk = rd_kafka_new(RD_KAFKA_PRODUCER, conf, errstr, sizeof(errstr));
+		if (!rk)
+		{
+			rd_kafka_conf_destroy(conf);
+			throw std::runtime_error("error Failed to create new producer");
+		}
 
-		//RdKafka::Producer* producer = RdKafka::Producer::create(conf, errstr);
-		//if (!producer) {
-		//	delete conf;
-		//	return "Failed to create producer: " + errstr;
-		//}
+		rd_kafka_conf_set_dr_msg_cb(conf, dr_msg_cb);
 
-		//RdKafka::ErrorCode err = producer->produce(
-		//	/* Topic name */
-		//	p_topic,
-		//	/* Any Partition: the builtin partitioner will be
-		//	 * used to assign the message to a topic based
-		//	 * on the message key, or random partition if
-		//	 * the key is not set. */
-		//	RdKafka::Topic::PARTITION_UA,
-		//	/* Make a copy of the value */
-		//	RdKafka::Producer::RK_MSG_COPY /* Copy payload */,
-		//	/* Value */
-		//	const_cast<char*>(p_message.c_str()), p_message.size(),
-		//	/* Key */
-		//	const_cast<char*>(p_key.c_str()), p_key.size(),
-		//	/* Timestamp (defaults to current time) */
-		//	0,
-		//	/* Message headers, if any */
-		//	NULL,
-		//	/* Per-message opaque value passed to
-		//	 * delivery report */
-		//	NULL);
+		signal(SIGINT, stop);
 
-		//producer->poll(500);
+		rd_kafka_resp_err_t err;
 
-		//if (err != RdKafka::ERR_NO_ERROR) {
-		//	return "Failed to produce to topic " + p_topic + ": " + RdKafka::err2str(err);
-		//}
+		err = rd_kafka_producev(
+			rk,
+			RD_KAFKA_V_TOPIC(p_topic.c_str()),
+			RD_KAFKA_V_MSGFLAGS(RD_KAFKA_MSG_F_COPY),
+			RD_KAFKA_V_KEY(const_cast<char*>(p_key.c_str()), p_key.size()),
+			RD_KAFKA_V_VALUE(const_cast<char*>(p_message.c_str()), p_message.size()),
+			RD_KAFKA_V_OPAQUE(NULL),
+			RD_KAFKA_V_END);
 
-		//// Wait for all messages to be delivered with the specified timeout
-		//err = producer->flush(500);
-
-		//if (err != RdKafka::ERR_NO_ERROR) {
-		//	return "Message delivery failed within the timeout period: " + RdKafka::err2str(err);
-		//}
-
-		//delete conf;
-		//delete producer;
+		if (err)
+		{
+			/*
+			 * Failed to *enqueue* message for producing.
+			 */
+			if (err == RD_KAFKA_RESP_ERR__QUEUE_FULL)
+			{
+				rd_kafka_poll(rk,
+					1000 /*block for max 1000ms*/);
+			}
+			throw std::runtime_error("Failed to produce to topic");
+		}
+		
+		rd_kafka_poll(rk, 0 /*non-blocking*/);
+		rd_kafka_flush(rk, 1000 /* wait for max 10 seconds */);
+		rd_kafka_destroy(rk);
 
 		return "Persisted";
 
